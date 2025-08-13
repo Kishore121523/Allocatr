@@ -48,7 +48,7 @@
 - Firebase account (for authentication and database)
 - Azure OpenAI account (optional, for AI features)
 
-### Installation
+### Local Development Setup
 
 1. **Clone the repository**
    ```bash
@@ -181,22 +181,15 @@ Response:
 }
 ```
 
-## 🤝 Contributing
+## 👨‍💻 About This Project
 
-We welcome contributions! Please follow these steps:
+Allocatr is a personal project created to solve real-world budgeting challenges with modern technology. This project showcases:
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Development Guidelines
-- Follow TypeScript best practices
-- Use Tailwind CSS for styling
-- Ensure accessibility compliance
-- Write meaningful commit messages
-- Add tests for new features
+- **Full-Stack Development**: Next.js 14 with TypeScript and modern React patterns
+- **AI Integration**: Azure OpenAI for intelligent expense categorization
+- **UI/UX Design**: Custom design system with smooth animations and responsive layouts
+- **Database Architecture**: Firebase Firestore with optimized data structures
+- **Performance Optimization**: Advanced caching, lazy loading, and efficient state management
 
 ## 📊 Project Structure
 
@@ -261,28 +254,36 @@ Allocatr is fully responsive and works beautifully on:
 - [ ] **Team Budgets**: Shared budgets for families/teams
 - [ ] **Bank Integration**: Connect bank accounts (with user consent)
 
-## 📞 Support
+## 📞 Contact & Feedback
 
-If you encounter any issues or have questions:
+This is a personal project, but feedback is always welcome:
 
-1. Check the [Issues](https://github.com/yourusername/allocatr/issues) page
-2. Create a new issue with detailed information
-3. Join our community discussions
+- **Email**: [your-email@example.com](mailto:your-email@example.com)
+- **LinkedIn**: [Your LinkedIn Profile](https://linkedin.com/in/yourprofile)
+- **Twitter**: [@yourusername](https://twitter.com/yourusername)
 
-## 📄 License
+For business inquiries or potential collaborations, please reach out via email.
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## 📄 License & Usage
+
+This is a personal project and portfolio piece. The code is provided for educational and demonstration purposes.
+
+**Important**: This project is not open source and is not licensed for commercial use or redistribution without explicit permission.
+
+For licensing inquiries or if you're interested in using this project commercially, please contact the author.
 
 ## 🙏 Acknowledgments
 
 - **Shadcn/ui**: For the beautiful component library
 - **Vercel**: For the deployment platform
 - **Firebase**: For backend services
-- **OpenAI**: For AI capabilities
-- **Contributors**: Thanks to all contributors who help improve Allocatr
+- **Azure OpenAI**: For AI capabilities
+- **Community**: Thanks to the open-source community for the amazing tools and libraries
 
 ---
 
-**Built with ❤️ for better financial management**
+**Built with ❤️ as a personal project showcasing modern web development**
 
-[Live Demo](https://allocatr.vercel.app) | [Documentation](https://docs.allocatr.com) | [GitHub](https://github.com/yourusername/allocatr)
+---
+
+*This project represents advanced full-stack development skills including AI integration, modern React patterns, and thoughtful UX design. Built as a portfolio piece with potential for future monetization.*
