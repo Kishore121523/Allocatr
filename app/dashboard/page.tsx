@@ -28,8 +28,11 @@ import {
   Wallet,
   Settings,
   TrendingUp,
+  TrendingDown,
   Plus,
-  ArrowRight
+  ArrowRight,
+  DollarSign,
+  PiggyBank
 } from 'lucide-react';
 import {
   Chart as ChartJS,
@@ -114,6 +117,12 @@ export default function DashboardPage() {
   const unallocatedFunds = budget ? budget.monthlyIncome - totalAllocated : 0;
   const hasUnallocatedFunds = unallocatedFunds > 0;
   const remainingBudget = budget ? budget.monthlyIncome - stats.totalSpent : 0;
+  const savingsRate = budget && budget.monthlyIncome > 0 
+    ? ((remainingBudget / budget.monthlyIncome) * 100).toFixed(1)
+    : '0';
+  const spendingRate = budget && budget.monthlyIncome > 0
+    ? ((stats.totalSpent / budget.monthlyIncome) * 100).toFixed(1)
+    : '0';
 
   // Enhanced category spending data including unallocated funds
   const enhancedCategorySpending = budget && hasUnallocatedFunds ? [
@@ -130,13 +139,9 @@ export default function DashboardPage() {
     }
   ] : filteredCategorySpending;
 
-  // Enhanced bar chart data with values in labels
+  // Simplified bar chart data without labels
   const barChartData = {
-    labels: [
-      `Income\n${budget ? formatCurrency(budget.monthlyIncome) : '$0'}`,
-      `Spent\n${formatCurrency(stats.totalSpent)}`,
-      `Remaining\n${formatCurrency(Math.max(0, remainingBudget))}`
-    ],
+    labels: ['Income', 'Spent', 'Remaining'],
     datasets: [
       {
         data: budget ? [budget.monthlyIncome, stats.totalSpent, Math.max(0, remainingBudget)] : [0, 0, 0],
@@ -195,7 +200,7 @@ export default function DashboardPage() {
         },
         callbacks: {
           title: function(context: any) {
-            return context[0].label.split('\n')[0];
+            return context[0].label;
           },
           label: function(context: any) {
             return formatCurrency(context.raw);
@@ -224,36 +229,12 @@ export default function DashboardPage() {
           display: false,
         },
         ticks: {
-          color: function(context: any) {
-            const label: string = barChartData.labels[context.index] || '';
-            const parts: string[] = label.split('\n');
-            const colors = [
-              'rgba(74, 222, 128, 1)',  // Green for Income
-              'rgba(248, 113, 113, 1)',  // Red for Spent  
-              'rgba(168, 85, 247, 1)',  // Purple for Remaining
-            ];
-            
-            // If it's the currency line (second part), use the bar color, otherwise use gray
-            return context.tick.label = colors[context.index];
-          },
+          color: 'rgb(107, 114, 128)',
           font: {
             size: 13,
-            weight: function(context: any) {
-              const label: string = barChartData.labels[context.index] || '';
-              const parts: string[] = label.split('\n');
-              // Make currency bold
-              return context.tick.label === parts[1] ? 700 : 500;
-            },
+            weight: 500,
           },
           padding: 8,
-          maxRotation: 0,
-          minRotation: 0,
-          autoSkip: false,
-          callback: function(value: any, index: number): string[] {
-            const label: string = barChartData.labels[index] || '';
-            const parts: string[] = label.split('\n');
-            return parts;
-          },
         },
         border: {
           display: false,
@@ -319,9 +300,80 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {/* Bar Chart with integrated values */}
+                    {/* Bar Chart */}
                     <div className="h-80 bg-gradient-to-b from-background/50 to-background/30 backdrop-blur-sm rounded-xl p-6 border border-border/50">
                       <Bar data={barChartData} options={barChartOptions} />
+                    </div>
+
+                    {/* Key Metrics Display */}
+                    <div className="grid grid-cols-3 gap-4">
+                      {/* Income Card */}
+                      <div className="bg-gradient-to-br from-green-50/50 to-green-100/30 dark:from-green-950/20 dark:to-green-900/10 rounded-xl p-4 border border-green-200/50 dark:border-green-800/30">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="p-2 bg-green-500/20 rounded-lg">
+                            <DollarSign className="h-4 w-4 text-green-600 dark:text-green-400" />
+                          </div>
+                          <span className="text-xs font-medium text-green-600 dark:text-green-400">Monthly Income</span>
+                        </div>
+                        <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                          {formatCurrency(budget.monthlyIncome)}
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Total budget
+                        </p>
+                      </div>
+
+                      {/* Spent Card */}
+                      <div className="bg-gradient-to-br from-red-50/50 to-red-100/30 dark:from-red-950/20 dark:to-red-900/10 rounded-xl p-4 border border-red-200/50 dark:border-red-800/30">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="p-2 bg-red-500/20 rounded-lg">
+                            <TrendingDown className="h-4 w-4 text-red-600 dark:text-red-400" />
+                          </div>
+                          <span className="text-xs font-medium text-red-600 dark:text-red-400">Total Spent</span>
+                        </div>
+                        <div className="text-2xl font-bold text-red-600 dark:text-red-400">
+                          {formatCurrency(stats.totalSpent)}
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {spendingRate}% of income
+                        </p>
+                      </div>
+
+                      {/* Remaining Card */}
+                      <div className="bg-gradient-to-br from-purple-50/50 to-purple-100/30 dark:from-purple-950/20 dark:to-purple-900/10 rounded-xl p-4 border border-purple-200/50 dark:border-purple-800/30">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="p-2 bg-purple-500/20 rounded-lg">
+                            <PiggyBank className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                          </div>
+                          <span className="text-xs font-medium text-purple-600 dark:text-purple-400">Remaining</span>
+                        </div>
+                        <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                          {formatCurrency(Math.max(0, remainingBudget))}
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {savingsRate}% savings rate
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Additional Quick Stats */}
+                    <div className="flex items-center justify-between px-4 py-3 bg-muted/30 rounded-lg">
+                      <div className="flex items-center gap-6">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                          <span className="text-sm text-muted-foreground">Allocated:</span>
+                          <span className="text-sm font-medium">{formatCurrency(totalAllocated)}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-gray-500"></div>
+                          <span className="text-sm text-muted-foreground">Unallocated:</span>
+                          <span className="text-sm font-medium">{formatCurrency(unallocatedFunds)}</span>
+                        </div>
+                      </div>
+                      <div className="text-sm">
+                        <span className="text-muted-foreground">Transactions:</span>
+                        <span className="font-medium ml-2">{transactions.length}</span>
+                      </div>
                     </div>
                   </div>
                 </CardContent>

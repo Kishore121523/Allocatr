@@ -318,20 +318,23 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
               </div>
               <Button
                 type="button"
-                variant="outline"
                 size="sm"
                 onClick={() => handleAICategorization(naturalInput)}
                 disabled={!naturalInput.trim() || isAILoading}
-                className="w-full"
+                className="w-full relative bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white overflow-hidden group transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none
+"
               >
+                {/* Shimmer effect */}
+                <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                
                 {isAILoading ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                    <Loader2 className="h-4 w-4 animate-spin mr-1 relative z-10" />
                     Processing...
                   </>
                 ) : (
                   <>
-                    <Wand2 className="h-4 w-4 mr-1" />
+                    <Wand2 className="h-4 w-4 mr-1 relative z-10" />
                     Extract with AI
                   </>
                 )}
@@ -347,7 +350,7 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
           <div className="border-b border-primary/30"></div>
           {/* Manual Input Fields */}
           <div className="grid gap-4 mb-2">
-            <div className="grid grid-cols-2 gap-4 mt-2">
+            <div className="grid grid-cols-2 gap-4 mt-1">
               <div className="space-y-2">
                 <Label htmlFor="amount">Amount</Label>
                 <Input

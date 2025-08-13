@@ -361,7 +361,6 @@ export default function BudgetPage() {
         await createBudget(income, categories);
         toast.success('Budget created successfully');
       }
-      router.push('/dashboard');
     } catch (error) {
       console.error('Error saving budget:', error);
       toast.error('Failed to save budget');

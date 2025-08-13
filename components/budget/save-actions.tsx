@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { LayoutDashboard } from 'lucide-react';
+import { LayoutDashboard, Save } from 'lucide-react';
 
 interface SaveActionsProps {
   onSubmit: () => void;
@@ -14,8 +14,8 @@ export function SaveActions({ onSubmit, disabled, isSubmitting, hasExistingBudge
   return (
     <div className="flex justify-end">
       <Button onClick={onSubmit} disabled={disabled}>
-        <LayoutDashboard className="h-4 w-4" />
-        {isSubmitting ? 'Saving...' : hasExistingBudget ? 'Back to Dashboard' : 'Create Budget & Continue'}
+        <Save className="h-4 w-4" />
+        {isSubmitting ? 'Saving...' : hasExistingBudget ? 'Save Budget' : 'Create Budget & Continue'}
       </Button>
     </div>
   );
