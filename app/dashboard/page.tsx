@@ -510,7 +510,7 @@ export default function DashboardPage() {
                           <div>
                             <CardTitle>Recent Transactions</CardTitle>
                             <CardDescription className="mt-1">
-                              Your latest {transactions.length} transactions this month
+                              Your latest {transactions.length > 5 ? 5 : transactions.length} transactions this month
                             </CardDescription>
                           </div>
                         </div>
@@ -523,7 +523,7 @@ export default function DashboardPage() {
                   <CollapsibleContent>
                     <CardContent className="pt-0">
                       <RecentTransactions 
-                        transactions={transactions.slice(0, 10)} 
+                        transactions={transactions.slice(0, 5)} 
                         categoryColors={categoryColors}
                       />
                     </CardContent>

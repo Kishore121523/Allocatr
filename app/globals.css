@@ -8,10 +8,10 @@
 --warning: #fbbf24;
 --success: #34d399; */
 :root {
-  --background: #f8f5f0;
-  --foreground: #3e2723;
-  --card: #f8f5f0;
-  --card-foreground: #3e2723;
+ --background: #fdfbf7;
+  --foreground: #4a3b33;
+  --card: #f8f4ee;
+  --card-foreground: #4a3b33;
   --popover: #fefdfb;
   --popover-foreground: #0a0a0a;
   --primary: #ff4d00;
@@ -61,10 +61,10 @@
 }
 
 .dark {
-  --background: #111111;
-  --foreground: #eeeeee;
-  --card: #191919;
-  --card-foreground: #eeeeee;
+  --background: #1a1a1a;
+  --foreground: #e0e0e0;
+  --card: #222222;
+  --card-foreground: #e0e0e0;
   --popover: #191919;
   --popover-foreground: #eeeeee;
   --primary: #f1b980;

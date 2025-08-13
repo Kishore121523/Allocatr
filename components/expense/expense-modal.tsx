@@ -37,6 +37,7 @@ import { useTransactions } from '@/hooks/use-transactions';
 import { useSpeechRecognition } from '@/hooks/use-speech-recognition';
 import { useAICategorization } from '@/hooks/use-ai-categorization';
 import { parseCurrencyInput, todayLocalYYYYMMDD, formatLocalDateYYYYMMDD, parseYYYYMMDDToLocalDate } from '@/lib/utils';
+import { calculateBudgetFlexibility } from '@/lib/budget-calculations';
 
 interface ExpenseModalProps {
   isOpen: boolean;
@@ -45,7 +46,7 @@ interface ExpenseModalProps {
 }
 
 export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps) {
-  const { budget } = useBudget();
+  const { budget, updateBudget } = useBudget();
   const { addTransaction, updateTransaction } = useTransactions();
   const {
     isListening,
@@ -69,6 +70,8 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
     category: any;
     amount: number;
   } | null>(null);
+  const [budgetAmount, setBudgetAmount] = useState('');
+  const [shouldSetBudget, setShouldSetBudget] = useState(false);
 
   useEffect(() => {
     if (transcript) {
@@ -156,6 +159,8 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
     // Check if adding expense to a category with zero or no budget allocation
     if (category && category.allocatedAmount === 0) {
       setPendingSubmission({ category, amount: parsedAmount });
+      setBudgetAmount(parsedAmount.toString()); // Default to expense amount
+      setShouldSetBudget(true); // Default to true for better UX
       setShowConfirmDialog(true);
       return;
     }
@@ -222,14 +227,51 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
   };
 
   const handleConfirmSubmission = async () => {
+    if (shouldSetBudget && pendingSubmission && budgetAmount.trim()) {
+      const parsedBudgetAmount = parseCurrencyInput(budgetAmount);
+      
+      if (parsedBudgetAmount > 0) {
+        try {
+          // Update the category budget first
+          await updateCategoryBudget(pendingSubmission.category.id, parsedBudgetAmount);
+          
+          toast.success('Budget allocated', {
+            description: `Set $${parsedBudgetAmount.toFixed(2)} budget for "${pendingSubmission.category.name}".`,
+          });
+        } catch (error) {
+          console.error('Error updating budget:', error);
+          toast.error('Failed to update budget', {
+            description: 'Please try again.',
+          });
+          return;
+        }
+      }
+    }
+
     setShowConfirmDialog(false);
     setPendingSubmission(null);
-    await performSubmission(false);
+    setBudgetAmount('');
+    setShouldSetBudget(false);
+    await performSubmission(true); // Skip warning since we handled it
   };
 
   const handleCancelSubmission = () => {
     setShowConfirmDialog(false);
     setPendingSubmission(null);
+    setBudgetAmount('');
+    setShouldSetBudget(false);
+  };
+
+  const updateCategoryBudget = async (categoryId: string, newBudgetAmount: number) => {
+    if (!budget) return;
+
+    const updatedCategories = budget.categories.map(cat => 
+      cat.id === categoryId 
+        ? { ...cat, allocatedAmount: newBudgetAmount }
+        : cat
+    );
+
+    await updateBudget({ categories: updatedCategories });
   };
 
   return (
@@ -406,7 +448,7 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
 
       {/* Custom Confirmation Dialog */}
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <DialogContent className="sm:max-w-[400px]">
+        <DialogContent className="sm:max-w-[450px]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-amber-600">
               <AlertTriangle className="h-5 w-5" />
@@ -419,18 +461,89 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
                 {pendingSubmission?.category?.name}
               </span>" which has no budget allocation.
             </DialogDescription>
-            <p className="text-sm text-muted-foreground mt-3">
-              This expense will not be tracked in your budget. Consider setting a budget 
-              for this category for better expense tracking.
-            </p>
           </DialogHeader>
+          
+          <div className="space-y-4">
+            {budget && (() => {
+              const { unallocatedAmount } = calculateBudgetFlexibility(budget);
+              return (
+                <>
+                  <div className="p-3 bg-muted/50 rounded-lg">
+                    <div className="text-sm text-muted-foreground">Available unallocated funds</div>
+                    <div className="text-lg font-semibold text-emerald-600">
+                      ${unallocatedAmount.toFixed(2)}
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="setBudget"
+                        checked={shouldSetBudget}
+                        onChange={(e) => setShouldSetBudget(e.target.checked)}
+                        className="rounded"
+                      />
+                      <Label htmlFor="setBudget" className="text-sm font-medium">
+                        Set budget for this category
+                      </Label>
+                    </div>
+
+                    {shouldSetBudget && (
+                      <div className="space-y-2">
+                        <Label htmlFor="budgetAmount" className="text-sm">
+                          Budget amount
+                        </Label>
+                        <Input
+                          id="budgetAmount"
+                          type="text"
+                          placeholder="$0.00"
+                          value={budgetAmount}
+                          onChange={(e) => setBudgetAmount(e.target.value)}
+                        />
+                        {budgetAmount && (() => {
+                          const parsedAmount = parseCurrencyInput(budgetAmount);
+                          if (parsedAmount > unallocatedAmount) {
+                            return (
+                              <p className="text-xs text-red-600">
+                                Insufficient unallocated funds (${unallocatedAmount.toFixed(2)} available)
+                              </p>
+                            );
+                          }
+                          return (
+                            <p className="text-xs text-muted-foreground">
+                              Remaining unallocated: ${(unallocatedAmount - parsedAmount).toFixed(2)}
+                            </p>
+                          );
+                        })()}
+                      </div>
+                    )}
+
+                    {!shouldSetBudget && (
+                      <p className="text-sm text-muted-foreground">
+                        This expense will be tracked as unallocated spending.
+                      </p>
+                    )}
+                  </div>
+                </>
+              );
+            })()}
+          </div>
           
           <div className="flex justify-end gap-3 pt-4">
             <Button variant="outline" onClick={handleCancelSubmission}>
               Cancel
             </Button>
-            <Button onClick={handleConfirmSubmission} className="bg-primary">
-              Add Expense
+            <Button 
+              onClick={handleConfirmSubmission} 
+              className="bg-primary"
+              disabled={shouldSetBudget && budget ? (() => {
+                const { unallocatedAmount } = calculateBudgetFlexibility(budget);
+                const parsedAmount = parseCurrencyInput(budgetAmount);
+                return parsedAmount > unallocatedAmount || parsedAmount <= 0;
+              })() : false}
+            >
+              {shouldSetBudget ? 'Set Budget & Add Expense' : 'Add Expense'}
             </Button>
           </div>
         </DialogContent>

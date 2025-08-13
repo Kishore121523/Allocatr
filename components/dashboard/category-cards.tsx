@@ -112,7 +112,7 @@ export function CategoryCards({
                     <div className="flex items-start gap-[5px]">
                       <Info className="h-4 w-4 text-primary mt-0.4 flex-shrink-0" />
                       <div className="text-xs text-muted-foreground">
-                        <strong>Tip:</strong> You can use your {formatCurrency(unallocatedAmount)} flexible funds 
+                        Tip: You can use your {formatCurrency(unallocatedAmount)} flexible funds 
                         to cover this overage if needed.
                       </div>
                     </div>

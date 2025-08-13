@@ -46,7 +46,7 @@ export function useTransactions(monthKey?: string) {
       where('userId', '==', user.id),
       where('date', '>=', Timestamp.fromDate(startDate)),
       where('date', '<=', Timestamp.fromDate(endDate)),
-      orderBy('date', 'desc')
+      orderBy('createdAt', 'desc')
     );
 
     const unsubscribe = onSnapshot(
