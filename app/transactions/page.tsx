@@ -8,6 +8,7 @@ import { AppHeader } from "@/components/layout/app-header";
 import { getMonthKey } from "@/lib/utils";
 import { useTransactions } from "@/hooks/use-transactions";
 import { useBudget } from "@/hooks/use-budget";
+import { useMonth } from "@/providers/month-provider";
 import { ExpenseModal } from "@/components/expense/expense-modal";
 import { Transaction, DEFAULT_CATEGORIES } from "@/types";
 import { TransactionsHeader } from "@/components/transactions/header";
@@ -15,9 +16,9 @@ import { TransactionsFilters } from "@/components/transactions/filters";
 import { TransactionsList } from "@/components/transactions/list";
 
 export default function TransactionsPage() {
-  const [month, setMonth] = useState(getMonthKey());
-  const { transactions, loading, deleteTransaction } = useTransactions(month);
-  const { budget } = useBudget(month);
+  const { currentMonth } = useMonth();
+  const { transactions, loading, deleteTransaction } = useTransactions(currentMonth);
+  const { budget } = useBudget(currentMonth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editing, setEditing] = useState<Transaction | null>(null);
   const [search, setSearch] = useState('');
@@ -109,8 +110,6 @@ export default function TransactionsPage() {
 
           <div ref={filtersRef}>
             <TransactionsFilters
-              month={month}
-              onMonthChange={setMonth}
               search={search}
               onSearchChange={setSearch}
               category={category}

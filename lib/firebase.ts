@@ -49,6 +49,7 @@ export const COLLECTIONS = {
   BUDGETS: 'budgets',
   TRANSACTIONS: 'transactions',
   CATEGORIES: 'categories',
+  USER_PREFERENCES: 'userPreferences',
 } as const;
 
 export default app;

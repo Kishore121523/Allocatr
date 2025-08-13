@@ -9,6 +9,16 @@ export interface User {
     updatedAt: Date;
   }
   
+  export interface UserPreferences {
+    id: string;
+    userId: string;
+    selectedMonth: string; // Format: "YYYY-MM"
+    lastActiveDate: string; // ISO date string
+    autoAdvanceMonth: boolean; // Whether to auto-advance to new months
+    createdAt: Date;
+    updatedAt: Date;
+  }
+  
   export interface Budget {
     id: string;
     userId: string;

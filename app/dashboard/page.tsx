@@ -13,6 +13,7 @@ import { RecentTransactions } from '@/components/dashboard/recent-transactions';
 
 import { useBudget } from '@/hooks/use-budget';
 import { useTransactions } from '@/hooks/use-transactions';
+import { useMonth } from '@/providers/month-provider';
 import { EmptyBudget } from '@/components/dashboard/empty-budget';
 import { calculateDashboardStats, calculateCategorySpending } from '@/lib/budget-calculations';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -32,7 +33,8 @@ import {
   Plus,
   ArrowRight,
   DollarSign,
-  PiggyBank
+  PiggyBank,
+  Calendar
 } from 'lucide-react';
 import {
   Chart as ChartJS,
@@ -59,8 +61,9 @@ ChartJS.register(
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { budget, loading: budgetLoading } = useBudget();
-  const { transactions, loading: transactionsLoading } = useTransactions();
+  const { currentMonth, isCurrentMonth } = useMonth();
+  const { budget, loading: budgetLoading } = useBudget(currentMonth);
+  const { transactions, loading: transactionsLoading } = useTransactions(currentMonth);
   const [stats, setStats] = useState(calculateDashboardStats(null, []));
   const [categorySpending, setCategorySpending] = useState<any[]>([]);
   const [categoryColors, setCategoryColors] = useState<Map<string, string>>(new Map());
@@ -293,10 +296,32 @@ export default function DashboardPage() {
               {/* Hero Visual Section with Bar Chart */}
               <Card className="overflow-hidden border-0 shadow-lg bg-gradient-to-br from-card to-card/95 animate-fade-in-up">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
-                    Budget Overview
-                  </CardTitle>
-                  <CardDescription>Your financial snapshot at a glance</CardDescription>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
+                        Budget Overview
+                      </CardTitle>
+                      <CardDescription>
+                        {isCurrentMonth 
+                          ? (new Date().getDate() <= 3 
+                              ? 'Welcome to a new month! Your budget is ready for fresh tracking.' 
+                              : 'Your current month\'s financial snapshot')
+                          : `Historical data for ${new Date(currentMonth + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`
+                        }
+                      </CardDescription>
+                    </div>
+                    {!isCurrentMonth ? (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-3 py-1 rounded-full">
+                        <Calendar className="h-4 w-4" />
+                        Historical View
+                      </div>
+                    ) : (new Date().getDate() <= 3 && (
+                      <div className="flex items-center gap-2 text-sm text-green-600 bg-green-50 dark:bg-green-950/20 px-3 py-1 rounded-full">
+                        <Calendar className="h-4 w-4" />
+                        New Month
+                      </div>
+                    ))}
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">

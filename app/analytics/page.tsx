@@ -9,6 +9,7 @@ import { AppHeader } from '@/components/layout/app-header';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useBudget } from '@/hooks/use-budget';
 import { useTransactions } from '@/hooks/use-transactions';
+import { useMonth } from '@/providers/month-provider';
 import { calculateCategorySpending,calculateBudgetFlexibility } from '@/lib/budget-calculations';
 import { EmptyBudget } from '@/components/dashboard/empty-budget';
 import { KeyMetricsCards } from '@/components/analytics/key-metrics';
@@ -52,8 +53,9 @@ ChartJS.register(
 );
 
 export default function AnalyticsPage() {
-  const { budget, loading: budgetLoading } = useBudget();
-  const { transactions, loading: transactionsLoading } = useTransactions();
+  const { currentMonth } = useMonth();
+  const { budget, loading: budgetLoading } = useBudget(currentMonth);
+  const { transactions, loading: transactionsLoading } = useTransactions(currentMonth);
   const [timeRange, setTimeRange] = useState('7'); // days
   const [categorySpending, setCategorySpending] = useState<CategorySpending[]>([]);
   const [allocatedCategories, setAllocatedCategories] = useState<CategorySpending[]>([]);

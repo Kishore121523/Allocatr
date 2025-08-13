@@ -9,6 +9,7 @@ import { ProtectedRoute } from '@/components/layout/protected-route';
 import { AppHeader } from '@/components/layout/app-header';
 // UI elements now handled by modular components
 import { useBudget } from '@/hooks/use-budget';
+import { useMonth } from '@/providers/month-provider';
 import { DEFAULT_CATEGORIES, BudgetCategory } from '@/types';
 import { formatCurrency, parseCurrencyInput } from '@/lib/utils';
 // icons handled inside modular components
@@ -33,7 +34,8 @@ const POPULAR_CATEGORIES = [
 
 export default function BudgetPage() {
   const router = useRouter();
-  const { budget, loading, createBudget, updateBudget } = useBudget();
+  const { currentMonth } = useMonth();
+  const { budget, loading, createBudget, updateBudget } = useBudget(currentMonth);
   const [monthlyIncome, setMonthlyIncome] = useState('');
   const [categories, setCategories] = useState<BudgetCategory[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);

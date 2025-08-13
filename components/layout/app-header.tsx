@@ -27,6 +27,8 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { MonthSelector } from '@/components/layout/month-selector';
+import { useMonth } from '@/providers/month-provider';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -37,6 +39,7 @@ const navigation = [
 
 export function AppHeader() {
   const { user, signOut } = useAuth();
+  const { currentMonth, setCurrentMonth } = useMonth();
   const pathname = usePathname();
 
   if (!user) return null;
@@ -74,8 +77,13 @@ export function AppHeader() {
             </nav>
           </div>
 
-          {/* Theme Toggle and User Menu */}
+          {/* Month Selector, Theme Toggle and User Menu */}
           <div className="flex items-center space-x-3">
+            <MonthSelector 
+              currentMonth={currentMonth}
+              onMonthChange={setCurrentMonth}
+              className="hidden sm:flex"
+            />
             <ThemeToggle />
             
             <DropdownMenu>

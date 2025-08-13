@@ -34,6 +34,7 @@ import { Mic, MicOff, Sparkles, Loader2, Wand2, CalendarIcon, AlertTriangle } fr
 import { format } from 'date-fns';
 import { useBudget } from '@/hooks/use-budget';
 import { useTransactions } from '@/hooks/use-transactions';
+import { useMonth } from '@/providers/month-provider';
 import { useSpeechRecognition } from '@/hooks/use-speech-recognition';
 import { useAICategorization } from '@/hooks/use-ai-categorization';
 import { parseCurrencyInput, todayLocalYYYYMMDD, formatLocalDateYYYYMMDD, parseYYYYMMDDToLocalDate } from '@/lib/utils';
@@ -46,8 +47,9 @@ interface ExpenseModalProps {
 }
 
 export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps) {
-  const { budget, updateBudget } = useBudget();
-  const { addTransaction, updateTransaction } = useTransactions();
+  const { currentMonth } = useMonth();
+  const { budget, updateBudget } = useBudget(currentMonth);
+  const { addTransaction, updateTransaction } = useTransactions(currentMonth);
   const {
     isListening,
     transcript,

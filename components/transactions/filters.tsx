@@ -3,8 +3,6 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import {
   Select,
   SelectContent,
@@ -12,17 +10,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Search, X, CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
+import { Search, X } from "lucide-react";
 
 type TransactionsFiltersProps = {
-  month: string;
-  onMonthChange: (value: string) => void;
   search: string;
   onSearchChange: (value: string) => void;
   category: string;
@@ -31,75 +21,18 @@ type TransactionsFiltersProps = {
 };
 
 export function TransactionsFilters({
-  month,
-  onMonthChange,
   search,
   onSearchChange,
   category,
   onCategoryChange,
   categories,
 }: TransactionsFiltersProps) {
-  const [open, setOpen] = React.useState(false);
-  
-  // Convert month string (YYYY-MM) to Date object for the calendar
-  const selectedDate = month 
-    ? (() => {
-        const [year, monthNum] = month.split('-').map(Number);
-        return new Date(year, monthNum - 1, 1);
-      })()
-    : new Date();
-
-  const handleMonthSelect = (date: Date | undefined) => {
-    if (date) {
-      // Format as YYYY-MM for the month value
-      const formattedMonth = format(date, 'yyyy-MM');
-      onMonthChange(formattedMonth);
-      setOpen(false);
-    }
-  };
-
-  // Format display text for the button
-  const displayMonth = month 
-    ? format(selectedDate, 'MMMM yyyy')
-    : 'Select month';
-
   return (
     <Card className="mb-6 border-0 shadow-sm">
       <CardContent className="py-4">
         <div className="flex flex-col md:flex-row gap-4">
-          {/* Month Selector with Calendar */}
-          <div className="flex-shrink-0">
-            <label className="text-xs text-muted-foreground mb-1 block">Month</label>
-            <Popover open={open} onOpenChange={setOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-[180px] justify-between font-normal hover:bg-accent"
-                >
-                  <span className="flex items-center gap-2">
-                    <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-                    {displayMonth}
-                  </span>
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={handleMonthSelect}
-                  captionLayout="dropdown"
-                  fromYear={2020}
-                  toYear={new Date().getFullYear() + 1}
-                  disabled={(date) => date > new Date()}
-                  initialFocus
-                  className="rounded-md border"
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
-
-          {/* Right-aligned filters */}
-          <div className="flex flex-1 flex-col md:flex-row gap-4 md:justify-end">
+          {/* Search and category filters */}
+          <div className="flex flex-1 flex-col md:flex-row gap-4">
             {/* Search Input */}
             <div className="flex-1 md:flex-initial">
               <label className="text-xs text-muted-foreground mb-1 block">Search</label>
