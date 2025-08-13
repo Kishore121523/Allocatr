@@ -171,15 +171,6 @@ allocatr/
 - **Authentication**: Secure user authentication flow
 - **Data Validation**: Input validation and sanitization
 
-## 🎯 Roadmap
-
-- [ ] **Recurring Transactions**: Support for subscription tracking
-- [ ] **Budget Goals**: Savings targets and goal tracking
-- [ ] **Export Features**: CSV/PDF export functionality
-- [ ] **Multi-Currency**: Support for multiple currencies
-- [ ] **Team Budgets**: Shared budgets for families/teams
-- [ ] **Bank Integration**: Connect bank accounts (with user consent)
-
 ## 📄 License & Usage
 
 This is a personal project and portfolio piece. The code is provided for educational and demonstration purposes.
