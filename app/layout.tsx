@@ -6,6 +6,7 @@ import './globals.css';
 import { AuthProvider } from '@/providers/auth-provider';
 import { ThemeProvider } from '@/providers/theme-provider';
 import { MonthProvider } from '@/providers/month-provider';
+import { PageTransition } from '@/components/layout/page-transition';
 import { Toaster } from '@/components/ui/sonner';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -37,7 +38,9 @@ export default function RootLayout({
         <ThemeProvider>
           <AuthProvider>
             <MonthProvider>
-              {children}
+              {/* <PageTransition> */}
+                {children}
+              {/* </PageTransition> */}
               <Toaster />
             </MonthProvider>
           </AuthProvider>

@@ -42,30 +42,30 @@ export async function POST(request: NextRequest) {
     // Prepare the prompt with date parsing
     const prompt = `Extract expense information from the following text and categorize it.
     
-Today's date is: ${today}
+        Today's date is: ${today}
 
-Text: "${input}"
+        Text: "${input}"
 
-Available categories: ${categories.join(', ')}
+        Available categories: ${categories.join(', ')}
 
-Instructions:
-1. Extract the amount (number only, no currency symbol)
-2. Create a brief, clear description
-3. Select the most appropriate category from the available list
-4. Parse any date references (tomorrow, next week, yesterday, specific dates, etc.)
-   - If a date is mentioned, convert it to YYYY-MM-DD format
-   - "tomorrow" means ${(() => { const d = new Date(now); d.setDate(d.getDate() + 1); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; })()}
-   - "yesterday" means ${(() => { const d = new Date(now); d.setDate(d.getDate() - 1); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; })()}
-   - If no date is mentioned, use today's date: ${today}
+        Instructions:
+        1. Extract the amount (number only, no currency symbol)
+        2. Create a brief, clear description
+        3. Select the most appropriate category from the available list
+        4. Parse any date references (tomorrow, next week, yesterday, specific dates, etc.)
+          - If a date is mentioned, convert it to YYYY-MM-DD format
+          - "tomorrow" means ${(() => { const d = new Date(now); d.setDate(d.getDate() + 1); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; })()}
+          - "yesterday" means ${(() => { const d = new Date(now); d.setDate(d.getDate() - 1); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; })()}
+          - If no date is mentioned, use today's date: ${today}
 
-Respond in JSON format:
-{
-  "amount": number,
-  "description": "string",
-  "suggestedCategory": "string",
-  "confidence": number between 0 and 1,
-  "date": "YYYY-MM-DD string"
-}`;
+        Respond in JSON format:
+        {
+          "amount": number,
+          "description": "string",
+          "suggestedCategory": "string",
+          "confidence": number between 0 and 1,
+          "date": "YYYY-MM-DD string"
+        }`;
 
     try {
       const completion = await client.chat.completions.create({

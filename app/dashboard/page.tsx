@@ -4,7 +4,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { gsap } from 'gsap';
+import { conditionalPageGsap, shouldAnimatePageTransitions, ANIMATION_CONFIG } from '@/lib/animation-config';
 import { ProtectedRoute } from '@/components/layout/protected-route';
 import { AppHeader } from '@/components/layout/app-header';
 import { CategoryCards } from '@/components/dashboard/category-cards';
@@ -93,21 +93,39 @@ export default function DashboardPage() {
     }
   }, [budget, transactions]);
 
-  // GSAP animation for quick action cards
+  // Set initial state immediately to prevent flash
   useEffect(() => {
-    if (!isLoading && budget && cardRefs.current.length > 0) {
-      // Set initial state
-      gsap.set(cardRefs.current, {
-        x: -30
+    const elements = cardRefs.current.filter(Boolean);
+    
+    if (elements.length > 0 && shouldAnimatePageTransitions()) {
+      const config = ANIMATION_CONFIG.pageTransitions;
+      
+      // Set initial hidden state immediately
+      conditionalPageGsap.set(elements, {
+        x: config.transform.x,
+        opacity: config.transform.opacity
       });
+    }
+  }, []); // Run once on mount
 
-      // Animate cards with stagger
-      gsap.to(cardRefs.current, {
+  // GSAP animation for page elements (controlled by page transition config - wait for data to load)
+  useEffect(() => {
+    const elements = cardRefs.current.filter(Boolean);
+    
+    // Wait for loading to finish AND budget state to be determined (even if null)
+    const isDataReady = !isLoading && (budget !== undefined);
+    
+    if (elements.length > 0 && isDataReady && shouldAnimatePageTransitions()) {
+      const config = ANIMATION_CONFIG.pageTransitions;
+
+      // Animate elements with subtle stagger
+      conditionalPageGsap.to(elements, {
         x: 0,
-        duration: 0.4,
-        ease: "power2.out",
-        stagger: 0.1,
-        delay: 0.2
+        opacity: 1,
+        duration: config.duration,
+        ease: config.ease,
+        stagger: config.stagger,
+        delay: config.delay
       });
     }
   }, [isLoading, budget]);
@@ -410,6 +428,7 @@ export default function DashboardPage() {
                 <Card 
                   ref={(el) => { cardRefs.current[0] = el; }}
                   className="group relative overflow-hidden border-0 shadow-md card-hover bg-gradient-to-br from-purple-500/10 to-purple-600/5 hover:from-purple-500/15 hover:to-purple-600/10"
+                  style={{ opacity: shouldAnimatePageTransitions() ? 0 : 1 }}
                 >
                   <CardContent className="p-6">
                     <button 
@@ -432,6 +451,7 @@ export default function DashboardPage() {
                 <Card 
                   ref={(el) => { cardRefs.current[1] = el; }}
                   className="group relative overflow-hidden border-0 shadow-md card-hover bg-gradient-to-br from-green-500/10 to-green-600/5 hover:from-green-500/15 hover:to-green-600/10"
+                  style={{ opacity: shouldAnimatePageTransitions() ? 0 : 1 }}
                 >
                   <CardContent className="p-6">
                     <button 
@@ -454,6 +474,7 @@ export default function DashboardPage() {
                 <Card 
                   ref={(el) => { cardRefs.current[2] = el; }}
                   className="group relative overflow-hidden border-0 shadow-md card-hover bg-gradient-to-br from-blue-500/10 to-blue-600/5 hover:from-blue-500/15 hover:to-blue-600/10"
+                  style={{ opacity: shouldAnimatePageTransitions() ? 0 : 1 }}
                 >
                   <CardContent className="p-6">
                     <button 

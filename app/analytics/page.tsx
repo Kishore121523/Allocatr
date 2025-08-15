@@ -3,7 +3,7 @@
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { gsap } from 'gsap';
+import { conditionalPageGsap, shouldAnimatePageTransitions, ANIMATION_CONFIG } from '@/lib/animation-config';
 import { ProtectedRoute } from '@/components/layout/protected-route';
 import { AppHeader } from '@/components/layout/app-header';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -69,14 +69,14 @@ export default function AnalyticsPage() {
 
   const isLoading = budgetLoading || transactionsLoading;
 
-  // GSAP tab animation function
+  // GSAP tab animation function (controlled by page transition config)
   const animateTabContent = useCallback((newTab: string) => {
     const currentContent = tabContentRefs.current[activeTab];
     const newContent = tabContentRefs.current[newTab];
 
-    if (currentContent && newContent && activeTab !== newTab) {
+    if (currentContent && newContent && activeTab !== newTab && shouldAnimatePageTransitions()) {
       // Create a timeline for smooth transition
-      const tl = gsap.timeline();
+      const tl = conditionalPageGsap.timeline();
       
       // Exit animation for current content
       tl.to(currentContent, {
@@ -84,9 +84,7 @@ export default function AnalyticsPage() {
         y: -20,
         duration: 0.2,
         ease: "power2.in"
-      })
-      // Enter animation for new content
-      .set(newContent, { opacity: 0, y: 20 })
+      }).set(newContent, { opacity: 0, y: 20 })
       .to(newContent, {
         opacity: 1,
         y: 0,
@@ -107,40 +105,44 @@ export default function AnalyticsPage() {
     }
   }, [budget, transactions]);
 
-  // GSAP animation for analytics page elements - MUST be declared before any conditional returns
+  // GSAP animation for analytics page elements - MUST be declared before any conditional returns (controlled by page transition config - subtle)
   useEffect(() => {
     const elements = [headerRef.current, metricsRef.current, tabsRef.current].filter(Boolean);
     
-    if (elements.length > 0 && !isLoading && budget) {
-      // Set initial state
-      gsap.set(elements, {
-        x: -30,
-        opacity: 0
+    if (elements.length > 0 && !isLoading && budget && shouldAnimatePageTransitions()) {
+      const config = ANIMATION_CONFIG.pageTransitions;
+      
+      // Set initial state - subtle
+      conditionalPageGsap.set(elements, {
+        x: config.transform.x,
+        opacity: config.transform.opacity
       });
 
-      // Animate elements with stagger
-      gsap.to(elements, {
+      // Animate elements with subtle stagger
+      conditionalPageGsap.to(elements, {
         x: 0,
         opacity: 1,
-        duration: 0.4,
-        ease: "power2.out",
-        stagger: 0.1,
-        delay: 0.1
+        duration: config.duration,
+        ease: config.ease,
+        stagger: config.stagger,
+        delay: config.delay
       });
     }
   }, [isLoading, budget]);
 
-  // Initialize tab content opacity
+  // Initialize tab content opacity (controlled by page transition config)
   useEffect(() => {
-    Object.values(tabContentRefs.current).forEach((ref, index) => {
-      if (ref) {
-        // Set initial state - only the active tab should be visible
-        gsap.set(ref, {
-          opacity: index === 0 ? 1 : 0,
-          y: index === 0 ? 0 : 20
-        });
-      }
-    });
+    if (shouldAnimatePageTransitions()) {
+      Object.values(tabContentRefs.current).forEach((ref, index) => {
+        if (ref) {
+          // Set initial state - only the active tab should be visible
+          conditionalPageGsap.set(ref, {
+            opacity: index === 0 ? 1 : 0,
+            y: index === 0 ? 0 : 20
+          });
+        }
+      });
+    }
   }, [budget, transactions]); // Re-run when data loads
 
   // Calculate daily spending for the line chart
@@ -329,10 +331,10 @@ export default function AnalyticsPage() {
 
             {/* Tabs for different views */}
             <Tabs value={activeTab} onValueChange={animateTabContent} className="space-y-4">
-              <TabsList className="grid w-full grid-cols-3 bg-muted p-1 rounded-lg">
-                <TabsTrigger value="patterns" className="rounded-md">Spending Patterns</TabsTrigger>
-                <TabsTrigger value="categories" className="rounded-md">Category Analysis</TabsTrigger>
-                <TabsTrigger value="insights" className="rounded-md">Insights</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-3 dark:bg-muted/20 bg-muted rounded-md">
+                <TabsTrigger value="patterns" className="rounded-md outline-none dark:border-none focus:outline-none">Spending Patterns</TabsTrigger>
+                <TabsTrigger value="categories" className="rounded-md outline-none dark:border-none focus:outline-none">Category Analysis</TabsTrigger>
+                <TabsTrigger value="insights" className="rounded-md outline-none dark:border-none focus:outline-none">Insights</TabsTrigger>
               </TabsList>
 
               <TabsContent 

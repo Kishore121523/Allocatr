@@ -2,10 +2,9 @@
 "use client";
 
 import { useMemo, useState, useEffect, useRef } from "react";
-import { gsap } from "gsap";
+import { conditionalPageGsap, shouldAnimatePageTransitions, ANIMATION_CONFIG } from '@/lib/animation-config';
 import { ProtectedRoute } from "@/components/layout/protected-route";
 import { AppHeader } from "@/components/layout/app-header";
-import { getMonthKey } from "@/lib/utils";
 import { useTransactions } from "@/hooks/use-transactions";
 import { useBudget } from "@/hooks/use-budget";
 import { useMonth } from "@/providers/month-provider";
@@ -77,23 +76,27 @@ export default function TransactionsPage() {
     setIsModalOpen(true);
   };
 
-  // GSAP animation for page elements
+  // GSAP animation for page elements (controlled by page transition config - subtle)
   useEffect(() => {
     const elements = [headerRef.current, filtersRef.current, listRef.current].filter(Boolean);
     
-    if (elements.length > 0) {
-      // Set initial state
-      gsap.set(elements, {
-        x: -30
+    if (elements.length > 0 && shouldAnimatePageTransitions()) {
+      const config = ANIMATION_CONFIG.pageTransitions;
+      
+      // Set initial state - subtle
+      conditionalPageGsap.set(elements, {
+        x: config.transform.x,
+        opacity: config.transform.opacity
       });
 
-      // Animate elements with stagger
-      gsap.to(elements, {
+      // Animate elements with subtle stagger
+      conditionalPageGsap.to(elements, {
         x: 0,
-        duration: 0.4,
-        ease: "power2.out",
-        stagger: 0.1,
-        delay: 0.1
+        opacity: 1,
+        duration: config.duration,
+        ease: config.ease,
+        stagger: config.stagger,
+        delay: config.delay
       });
     }
   }, []);

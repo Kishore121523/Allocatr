@@ -39,6 +39,7 @@ import { useSpeechRecognition } from '@/hooks/use-speech-recognition';
 import { useAICategorization } from '@/hooks/use-ai-categorization';
 import { parseCurrencyInput, todayLocalYYYYMMDD, formatLocalDateYYYYMMDD, parseYYYYMMDDToLocalDate } from '@/lib/utils';
 import { calculateBudgetFlexibility } from '@/lib/budget-calculations';
+import { DEFAULT_CATEGORIES } from '@/types';
 
 interface ExpenseModalProps {
   isOpen: boolean;
@@ -156,6 +157,30 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
       return;
     }
 
+    // Check if it's a new category that needs to be added to budget
+    if (categoryId.startsWith('new-')) {
+      const categoryName = categoryId.replace('new-', '');
+      const defaultCategory = DEFAULT_CATEGORIES.find(cat => cat.name === categoryName);
+      
+      if (defaultCategory) {
+        // Create a temporary category object for the confirmation dialog
+        const newCategory = {
+          id: 'temp-' + Date.now(),
+          name: defaultCategory.name,
+          color: defaultCategory.color,
+          icon: defaultCategory.icon,
+          allocatedAmount: 0,
+          isCustom: false,
+        };
+        
+        setPendingSubmission({ category: newCategory, amount: parsedAmount });
+        setBudgetAmount(parsedAmount.toString()); // Default to expense amount
+        setShouldSetBudget(true); // Default to true for new categories
+        setShowConfirmDialog(true);
+        return;
+      }
+    }
+
     const category = budget.categories.find((c) => c.id === categoryId);
     
     // Check if adding expense to a category with zero or no budget allocation
@@ -173,7 +198,16 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
 
   const performSubmission = async (skipWarning = false) => {
     const parsedAmount = parseCurrencyInput(amount);
-    const category = budget?.categories.find((c) => c.id === categoryId);
+    // For new categories, we need to find the category in the updated budget
+    let category = budget?.categories.find((c) => c.id === categoryId);
+    
+    // If category not found and we have pending submission, use that category info
+    if (!category && pendingSubmission?.category) {
+      category = {
+        ...pendingSubmission.category,
+        id: categoryId // Use the updated category ID
+      };
+    }
 
     setIsSubmitting(true);
 
@@ -234,8 +268,13 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
       
       if (parsedBudgetAmount > 0) {
         try {
-          // Update the category budget first
-          await updateCategoryBudget(pendingSubmission.category.id, parsedBudgetAmount);
+          // Check if this is a new category that needs to be added to the budget
+          if (pendingSubmission.category.id.startsWith('temp-')) {
+            await addNewCategoryToBudget(pendingSubmission.category, parsedBudgetAmount);
+          } else {
+            // Update existing category budget
+            await updateCategoryBudget(pendingSubmission.category.id, parsedBudgetAmount);
+          }
           
           toast.success('Budget allocated', {
             description: `Set $${parsedBudgetAmount.toFixed(2)} budget for "${pendingSubmission.category.name}".`,
@@ -247,6 +286,17 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
           });
           return;
         }
+      }
+    } else if (pendingSubmission?.category.id.startsWith('temp-')) {
+      // Add new category with zero budget
+      try {
+        await addNewCategoryToBudget(pendingSubmission.category, 0);
+      } catch (error) {
+        console.error('Error adding new category:', error);
+        toast.error('Failed to add category', {
+          description: 'Please try again.',
+        });
+        return;
       }
     }
 
@@ -274,6 +324,28 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
     );
 
     await updateBudget({ categories: updatedCategories });
+  };
+
+  const addNewCategoryToBudget = async (newCategory: any, budgetAmount: number) => {
+    if (!budget) return;
+
+    // Generate a proper ID for the new category
+    const categoryId = `${newCategory.name.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
+    
+    const categoryToAdd = {
+      id: categoryId,
+      name: newCategory.name,
+      color: newCategory.color,
+      icon: newCategory.icon,
+      allocatedAmount: budgetAmount,
+      isCustom: false,
+    };
+
+    const updatedCategories = [...budget.categories, categoryToAdd];
+    await updateBudget({ categories: updatedCategories });
+    
+    // Update the categoryId state to the new category ID for the transaction
+    setCategoryId(categoryId);
   };
 
   return (
@@ -411,6 +483,7 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
                 <SelectContent>
+                  {/* Existing budget categories */}
                   {budget?.categories.map((category) => (
                     <SelectItem key={category.id} value={category.id}>
                       <div className="flex items-center gap-2 w-full">
@@ -434,6 +507,39 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
                       </div>
                     </SelectItem>
                   ))}
+                  
+                  {/* Separator if there are categories not in budget */}
+                  {(() => {
+                    const existingCategoryNames = budget?.categories.map(cat => cat.name.toLowerCase()) || [];
+                    const availableCategories = DEFAULT_CATEGORIES.filter(
+                      defaultCat => !existingCategoryNames.includes(defaultCat.name.toLowerCase())
+                    );
+                    
+                    if (availableCategories.length > 0) {
+                      return (
+                        <>
+                          <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground bg-muted/50">
+                            Add to Budget
+                          </div>
+                          {availableCategories.map((category) => (
+                            <SelectItem key={`new-${category.name}`} value={`new-${category.name}`}>
+                              <div className="flex items-center gap-2 w-full">
+                                <div
+                                  className="w-3 h-3 rounded-full"
+                                  style={{ backgroundColor: category.color }}
+                                />
+                                <span className="flex-1">{category.name}</span>
+                                <Badge variant="outline" className="text-xs text-emerald-600 border-emerald-300">
+                                  Add to Budget
+                                </Badge>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </>
+                      );
+                    }
+                    return null;
+                  })()}
                 </SelectContent>
               </Select>
             </div>
@@ -457,14 +563,26 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-amber-600">
               <AlertTriangle className="h-5 w-5" />
-              No Budget Allocated
+              {pendingSubmission?.category?.id.startsWith('temp-') ? 'Add New Category' : 'No Budget Allocated'}
             </DialogTitle>
             <DialogDescription className="text-sm text-foreground pt-2">
-              You're adding <span className="font-semibold">
-                ${pendingSubmission?.amount.toFixed(2)}
-              </span> to "<span className="font-semibold">
-                {pendingSubmission?.category?.name}
-              </span>" which has no budget allocation.
+              {pendingSubmission?.category?.id.startsWith('temp-') ? (
+                <>
+                  You're adding <span className="font-semibold">
+                    ${pendingSubmission?.amount.toFixed(2)}
+                  </span> to "<span className="font-semibold">
+                    {pendingSubmission?.category?.name}
+                  </span>" which is not in your budget yet. Would you like to add it?
+                </>
+              ) : (
+                <>
+                  You're adding <span className="font-semibold">
+                    ${pendingSubmission?.amount.toFixed(2)}
+                  </span> to "<span className="font-semibold">
+                    {pendingSubmission?.category?.name}
+                  </span>" which has no budget allocation.
+                </>
+              )}
             </DialogDescription>
           </DialogHeader>
           
@@ -490,7 +608,9 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
                         className="rounded"
                       />
                       <Label htmlFor="setBudget" className="text-sm font-medium">
-                        Set budget for this category
+                        {pendingSubmission?.category?.id.startsWith('temp-') 
+                          ? 'Add category with budget allocation' 
+                          : 'Set budget for this category'}
                       </Label>
                     </div>
 
@@ -526,7 +646,9 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
 
                     {!shouldSetBudget && (
                       <p className="text-sm text-muted-foreground">
-                        This expense will be tracked as unallocated spending.
+                        {pendingSubmission?.category?.id.startsWith('temp-') 
+                          ? 'The category will be added with no budget allocation. This expense will be tracked as unallocated spending.'
+                          : 'This expense will be tracked as unallocated spending.'}
                       </p>
                     )}
                   </div>
@@ -548,7 +670,9 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
                 return parsedAmount > unallocatedAmount || parsedAmount <= 0;
               })() : false}
             >
-              {shouldSetBudget ? 'Set Budget & Add Expense' : 'Add Expense'}
+              {pendingSubmission?.category?.id.startsWith('temp-') 
+                ? (shouldSetBudget ? 'Add Category & Expense' : 'Add Category & Expense')
+                : (shouldSetBudget ? 'Set Budget & Add Expense' : 'Add Expense')}
             </Button>
           </div>
         </DialogContent>

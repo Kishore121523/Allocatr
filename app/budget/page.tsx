@@ -4,7 +4,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { gsap } from 'gsap';
+import { conditionalPageGsap, shouldAnimatePageTransitions, ANIMATION_CONFIG } from '@/lib/animation-config';
 import { ProtectedRoute } from '@/components/layout/protected-route';
 import { AppHeader } from '@/components/layout/app-header';
 // UI elements now handled by modular components
@@ -59,8 +59,8 @@ export default function BudgetPage() {
     }
   }, [budget]);
 
-  const [debouncedSave, setDebouncedSave] = useState<NodeJS.Timeout | null>(null);
-  const [debouncedCategorySave, setDebouncedCategorySave] = useState<NodeJS.Timeout | null>(null);
+  const [debouncedSave, setDebouncedSave] = useState<ReturnType<typeof setTimeout> | null>(null);
+  const [debouncedCategorySave, setDebouncedCategorySave] = useState<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     // Cleanup timeouts on unmount
@@ -362,6 +362,7 @@ export default function BudgetPage() {
         // Create new budget
         await createBudget(income, categories);
         toast.success('Budget created successfully');
+        router.push('/dashboard');
       }
     } catch (error) {
       console.error('Error saving budget:', error);
@@ -387,26 +388,42 @@ export default function BudgetPage() {
     cat.name.toLowerCase().includes(categorySearch.toLowerCase())
   );
 
-  // GSAP animation for page elements
+  // Set initial state immediately to prevent flash
   useEffect(() => {
     const elements = [headerRef.current, ...contentRefs.current].filter(Boolean);
     
-    if (elements.length > 0 && !loading) {
-      // Set initial state
-      gsap.set(elements, {
-        x: -30
-      });
-
-      // Animate elements with stagger
-      gsap.to(elements, {
-        x: 0,
-        duration: 0.4,
-        ease: "power2.out",
-        stagger: 0.08,
-        delay: 0.1
+    if (elements.length > 0 && shouldAnimatePageTransitions()) {
+      const config = ANIMATION_CONFIG.pageTransitions;
+      
+      // Set initial hidden state immediately
+      conditionalPageGsap.set(elements, {
+        x: config.transform.x,
+        opacity: config.transform.opacity
       });
     }
-  }, [loading]);
+  }, []); // Run once on mount
+
+  // GSAP animation for page elements (controlled by page transition config - wait for data to load)
+  useEffect(() => {
+    const elements = [headerRef.current, ...contentRefs.current].filter(Boolean);
+    
+    // Wait for loading to finish AND budget state to be determined (even if null)
+    const isDataReady = !loading && (budget !== undefined);
+    
+    if (elements.length > 0 && isDataReady && shouldAnimatePageTransitions()) {
+      const config = ANIMATION_CONFIG.pageTransitions;
+
+      // Animate elements with subtle stagger
+      conditionalPageGsap.to(elements, {
+        x: 0,
+        opacity: 1,
+        duration: config.duration,
+        ease: config.ease,
+        stagger: config.stagger,
+        delay: config.delay
+      });
+    }
+  }, [loading, budget]);
 
   return (
     <ProtectedRoute>
@@ -414,7 +431,7 @@ export default function BudgetPage() {
         <AppHeader />
         
         <main className="container mx-auto px-4 py-8 max-w-4xl">
-          <div ref={headerRef} className="mb-8">
+          <div ref={headerRef} className="mb-8" style={{ opacity: shouldAnimatePageTransitions() ? 0 : 1 }}>
             <h1 className="text-3xl font-bold mb-2">
               {budget ? 'Edit Budget' : 'Set Up Your Budget'}
             </h1>
@@ -423,14 +440,14 @@ export default function BudgetPage() {
             </p>
           </div>
 
-          <div ref={(el) => { contentRefs.current[0] = el; }}>
+          <div ref={(el) => { contentRefs.current[0] = el; }} style={{ opacity: shouldAnimatePageTransitions() ? 0 : 1 }}>
             <IncomeCard
               monthlyIncome={monthlyIncome}
               onChange={handleIncomeChange}
             />
           </div>
 
-          <div ref={(el) => { contentRefs.current[1] = el; }}>
+          <div ref={(el) => { contentRefs.current[1] = el; }} style={{ opacity: shouldAnimatePageTransitions() ? 0 : 1 }}>
             <AllocationSummaryCard
               allocationPercentage={allocationPercentage}
               totalAllocated={totalAllocated}
@@ -444,7 +461,7 @@ export default function BudgetPage() {
 
           {/* Flexible Budgeting Info moved to tooltip in Unallocated Funds section */}
 
-          <div ref={(el) => { contentRefs.current[2] = el; }}>
+          <div ref={(el) => { contentRefs.current[2] = el; }} style={{ opacity: shouldAnimatePageTransitions() ? 0 : 1 }}>
             <AddCategoriesCard
             showAllCategories={showAllCategories}
             onToggleShowAll={() => setShowAllCategories(!showAllCategories)}
@@ -456,7 +473,7 @@ export default function BudgetPage() {
             />
           </div>
 
-          <div ref={(el) => { contentRefs.current[3] = el; }}>
+          <div ref={(el) => { contentRefs.current[3] = el; }} style={{ opacity: shouldAnimatePageTransitions() ? 0 : 1 }}>
             <AllocatedCategoriesCard
             categories={categories}
             editingCategoryId={editingCategoryId}

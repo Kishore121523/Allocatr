@@ -87,7 +87,7 @@ export function MonthSelector({ currentMonth, onMonthChange, className }: MonthS
         variant="outline" 
         size="icon"
         onClick={() => navigateMonth('prev')}
-        className="h-9 w-9"
+        className="h-9 w-9 flex-shrink-0"
       >
         <ChevronLeft className="h-4 w-4" />
       </Button>
@@ -97,16 +97,16 @@ export function MonthSelector({ currentMonth, onMonthChange, className }: MonthS
         <PopoverTrigger asChild>
           <Button 
             variant="outline" 
-            className="h-9 px-4 min-w-[140px] justify-between"
+            className="h-9 px-3 min-w-0 flex-1 justify-between"
           >
-            <span className="font-medium">{currentMonthDisplay}</span>
-            <Calendar className="h-4 w-4 ml-2" />
+            <span className="font-medium truncate">{currentMonthDisplay}</span>
+            <Calendar className="h-4 w-4 ml-1 flex-shrink-0" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-80 p-4" align="start">
           <div className="space-y-4">
             <h3 className="font-semibold text-sm text-foreground">Select Month</h3>
-            <div className="max-h-64 overflow-y-auto space-y-1">
+            <div className="max-h-64 overflow-y-auto scrollbar-hide space-y-1">
               {monthOptions.map((option) => (
                 <button
                   key={option.key}
@@ -147,7 +147,7 @@ export function MonthSelector({ currentMonth, onMonthChange, className }: MonthS
         variant="outline" 
         size="icon"
         onClick={() => navigateMonth('next')}
-        className="h-9 w-9"
+        className="h-9 w-9 flex-shrink-0"
       >
         <ChevronRight className="h-4 w-4" />
       </Button>
