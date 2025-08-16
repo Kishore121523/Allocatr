@@ -48,7 +48,7 @@ export function TransactionsList({
         ) : (
           <div className="space-y-2 sm:space-y-3">
             {transactions.map((t) => (
-              <div key={t.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-lg hover:bg-accent gap-3 sm:gap-4">
+              <div key={t.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-lg border border-border/75 bg-accent/30 sm:border-transparent sm:bg-transparent sm:hover:bg-accent gap-3 sm:gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="font-medium text-sm truncate">{t.description}</p>

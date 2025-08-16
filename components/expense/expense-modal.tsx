@@ -79,7 +79,7 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
   useEffect(() => {
     if (transcript) {
       setNaturalInput(transcript);
-      handleAICategorization(transcript);
+      // Don't automatically call AI categorization - let user decide when to extract with AI
     }
   }, [transcript]);
 

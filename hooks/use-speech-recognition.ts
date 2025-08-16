@@ -17,6 +17,7 @@ declare global {
   interface Window {
     SpeechRecognition: any;
     webkitSpeechRecognition: any;
+    webkitSpeechGrammarList: any;
   }
 }
 
@@ -29,21 +30,33 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
 
   const isSupported =
     typeof window !== "undefined" &&
-    ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) &&
-    !hasNetworkError;
+    ("SpeechRecognition" in window || "webkitSpeechRecognition" in window);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (!("SpeechRecognition" in window || "webkitSpeechRecognition" in window)) return;
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
+    
+    try {
+      const recognition = new SpeechRecognition();
+      
+      // Test if the browser properly supports speech recognition
+      if (!recognition) {
+        console.warn("Speech recognition failed to initialize");
+        return;
+      }
 
     // Configure recognition
     recognition.continuous = false;
     recognition.interimResults = true;
     recognition.lang = "en-US";
     recognition.maxAlternatives = 1;
+    
+    // Add additional compatibility settings for desktop browsers
+    if ('webkitSpeechRecognition' in window) {
+      recognition.grammars = recognition.grammars || window.webkitSpeechGrammarList?.();
+    }
 
     recognition.onstart = () => {
       setIsListening(true);
@@ -85,7 +98,7 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
             hasShownNetworkError.current = true;
             setHasNetworkError(true);
             toast.error("Voice input unavailable", {
-              description: "Speech recognition service is not accessible. This often happens in development or on non-HTTPS connections.",
+              description: "Speech recognition service is not accessible. Make sure you're on HTTPS and have a stable internet connection.",
               duration: 5000,
             });
           }
@@ -93,7 +106,7 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
 
         case "not-allowed":
           toast.error("Microphone access denied", {
-            description: "Please enable microphone access in your browser settings.",
+            description: "Please enable microphone access in your browser settings and refresh the page.",
           });
           break;
 
@@ -106,12 +119,31 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
 
         case "audio-capture":
           toast.error("No microphone found", {
-            description: "Please ensure a microphone is connected.",
+            description: "Please ensure a microphone is connected and accessible.",
           });
           break;
 
         case "aborted":
           // User or system aborted, no need to show error
+          break;
+
+        case "service-not-allowed":
+          toast.error("Speech service blocked", {
+            description: "Speech recognition is blocked by your browser or security settings.",
+          });
+          break;
+
+        case "bad-grammar":
+          // Just restart, this is usually temporary
+          setTimeout(() => {
+            if (!isListening) {
+              try {
+                recognition.start();
+              } catch (e) {
+                // Ignore
+              }
+            }
+          }, 100);
           break;
 
         default:
@@ -134,7 +166,11 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
       setHasNetworkError(false);
     };
 
-    recognitionRef.current = recognition;
+      recognitionRef.current = recognition;
+    } catch (error) {
+      console.warn("Failed to initialize speech recognition:", error);
+      setHasNetworkError(true);
+    }
 
     return () => {
       if (recognitionRef.current) {
@@ -148,13 +184,6 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
   }, []);
 
   const startListening = useCallback(() => {
-    if (hasNetworkError) {
-      toast.error("Voice input not available", {
-        description: "The speech service cannot be reached. Try typing instead, or check if you're on HTTPS.",
-      });
-      return;
-    }
-
     if (!recognitionRef.current) {
       toast.error("Voice input not initialized", {
         description: "Please refresh the page and try again.",
@@ -189,7 +218,7 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
         });
       }
     }
-  }, [hasNetworkError]);
+  }, []);
 
   const stopListening = useCallback(() => {
     if (recognitionRef.current && isListening) {
