@@ -59,7 +59,7 @@ export function CategoryCards({
           
           return (
             <Card key={category.categoryId} className="relative border-[0.75px] overflow-hidden">
-              <CardHeader className="pb-2 sm:pb-3 px-3 sm:px-6 pt-3 sm:pt-6">
+              <CardHeader className="py-2 px-4 sm:px-6">
                 <div className="flex flex-row items-center justify-between gap-2 sm:gap-0">
                   <CardTitle className="text-base sm:text-lg font-medium flex items-center gap-2">
                     <div 
@@ -76,7 +76,7 @@ export function CategoryCards({
                   </Badge>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-2 sm:space-y-3 px-3 sm:px-6 pb-3 sm:pb-6">
+              <CardContent className="space-y-2 sm:space-y-3 px-4 sm:px-6 pb-1 sm:pb-6">
                 <Progress 
                   value={Math.min(category.percentageUsed, 100)} 
                   className="h-2"
