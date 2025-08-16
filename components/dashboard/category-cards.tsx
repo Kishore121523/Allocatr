@@ -76,7 +76,7 @@ export function CategoryCards({
                   </Badge>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-2 sm:space-y-3 px-4 sm:px-6 pb-1 sm:pb-6">
+              <CardContent className="space-y-2 sm:space-y-3 px-4 sm:px-6 pb-1 sm:pb-2">
                 <Progress 
                   value={Math.min(category.percentageUsed, 100)} 
                   className="h-2"
