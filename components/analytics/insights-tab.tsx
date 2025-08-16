@@ -15,7 +15,6 @@ import {
   Clock,
   BarChart3,
   Lightbulb,
-  Shield
 } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import type { Budget, CategorySpending } from '@/types';

@@ -23,8 +23,6 @@ import {
   Calculator, 
   TrendingUp,
   LogOut,
-  User,
-  Settings,
   Menu,
   X
 } from 'lucide-react';

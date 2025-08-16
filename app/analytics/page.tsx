@@ -34,7 +34,7 @@ import {
   RadialLinearScale,
 } from 'chart.js';
 // Chart components are used within modular components
-import { formatCurrency, formatLocalDateYYYYMMDD, parseYYYYMMDDToLocalDate } from '@/lib/utils';
+import { formatLocalDateYYYYMMDD, parseYYYYMMDDToLocalDate } from '@/lib/utils';
 import type { Budget, CategorySpending } from '@/types';
 
 // Register ChartJS components

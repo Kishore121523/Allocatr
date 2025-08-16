@@ -7,9 +7,8 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CategorySpending } from '@/types';
-import { formatCurrency, getProgressColorClass } from '@/lib/utils';
+import { formatCurrency } from '@/lib/utils';
 import { PiggyBank, Info } from 'lucide-react';
-import * as Icons from 'lucide-react';
 
 interface CategoryCardsProps {
   categorySpending: CategorySpending[];
