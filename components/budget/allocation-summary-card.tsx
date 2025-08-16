@@ -28,26 +28,26 @@ export function AllocationSummaryCard({
   onAddToSavings,
 }: AllocationSummaryCardProps) {
   return (
-    <Card className="mb-6">
+    <Card className="mb-4 sm:mb-6">
       <CardHeader>
-        <CardTitle>Budget Allocation</CardTitle>
+        <CardTitle className="text-lg sm:text-xl">Budget Allocation</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <Progress value={Math.min(allocationPercentage, 100)} className="h-3" />
-          <div className="flex justify-between text-sm">
+          <Progress value={Math.min(allocationPercentage, 100)} className="h-2 sm:h-3" />
+          <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0 text-sm">
             <span>Allocated: {formatCurrency(totalAllocated)}</span>
             <span>Income: {formatCurrency(income)}</span>
           </div>
 
           {hasUnallocated && (
-            <div className="bg-accent border border-border rounded-lg p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
+            <div className="bg-accent border border-border rounded-lg p-3 sm:p-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+                <div className="flex items-start sm:items-center gap-2">
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Info className="h-4 w-4 text-primary cursor-default" aria-label="Flexible budgeting info" />
+                        <Info className="h-4 w-4 text-primary cursor-default mt-0.5 sm:mt-0 flex-shrink-0" aria-label="Flexible budgeting info" />
                       </TooltipTrigger>
                       <TooltipContent side="top" className="w-64">
                         <p className="font-medium text-foreground mb-1">Flexible Budgeting</p>
@@ -60,7 +60,7 @@ export function AllocationSummaryCard({
                     <p className="text-xs text-muted-foreground">Consider allocating to savings or keep flexible</p>
                   </div>
                 </div>
-                <Button onClick={onAddToSavings} size="sm" variant="outline">
+                <Button onClick={onAddToSavings} size="sm" variant="outline" className="w-full sm:w-auto">
                   <PiggyBank className="h-4 w-4 mr-1" />
                   Add to Savings
                 </Button>

@@ -97,29 +97,29 @@ export function PatternsTab({ transactions, allocatedCategories }: PatternsTabPr
   const maxWeekTotal = Math.max(...monthlyData.map(d => d.total), 1);
 
   return (
-    <div className="grid gap-6">
+    <div className="grid gap-4 sm:gap-6">
       {/* Improved Weekly Spending Pattern */}
       <Card className="border-0 shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5 text-primary" />
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             Weekly Spending Pattern
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-sm">
             Total spent: {formatCurrency(totalWeeklySpent)} across {transactions.length} {transactions.length === 1 ? 'transaction' : 'transactions'}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-7 gap-2 mb-4">
+          <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-4">
             {weeklyData.map((dayData) => {
               const heightPercentage = (dayData.total / maxDayTotal) * 100;
               const isHighSpending = dayData.total > totalWeeklySpent / 7 * 1.2; // 20% above average
               
               return (
                 <div key={dayData.day} className="flex flex-col items-center">
-                  <div className="w-full h-32 bg-muted rounded-lg relative overflow-hidden mb-2 flex items-end">
+                  <div className="w-full h-20 sm:h-32 bg-muted rounded-lg relative overflow-hidden mb-2 flex items-end">
                     <div
-                      className={`w-full transition-all duration-700 rounded-lg flex flex-col justify-end p-1 ${
+                      className={`w-full transition-all duration-700 rounded-lg flex flex-col justify-end p-0.5 sm:p-1 ${
                         isHighSpending 
                         ? 'bg-gradient-to-t from-[#ff4d00]/80 to-[#ff4d00]/60 dark:from-[#f1b980]/80 dark:to-[#f1b980]/60' 
                         : dayData.total > 0 
@@ -130,21 +130,23 @@ export function PatternsTab({ transactions, allocatedCategories }: PatternsTabPr
                     >
                       {dayData.total > 0 && (
                         <div className="text-center">
-                          <div className="text-xs text-white font-bold">
+                          <div className="md:text-[12px] text-[8px] text-xs text-white font-bold leading-tight">
                             {formatCurrency(dayData.total)}
                           </div>
-                            {dayData.count > 0 && (
-                              <div className="text-xs text-white/80">
-                                {dayData.count} {dayData.count === 1 ? 'transaction' : 'transactions'}
-                              </div>
-                            )}
+                          {/* Hide transaction count on mobile for cleaner look */}
+                          {dayData.count > 0 && (
+                            <div className="hidden sm:block text-xs text-white/80">
+                              {dayData.count} {dayData.count === 1 ? 'transaction' : 'transactions'}
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
                   </div>
                   <span className="text-xs font-medium text-center">{dayData.day}</span>
+                  {/* Hide average on mobile for cleaner look */}
                   {dayData.average > 0 && (
-                    <span className="text-xs text-muted-foreground">
+                    <span className="hidden sm:block text-xs text-muted-foreground">
                       avg: {formatCurrency(dayData.average)}
                     </span>
                   )}
@@ -154,15 +156,15 @@ export function PatternsTab({ transactions, allocatedCategories }: PatternsTabPr
           </div>
           
           {/* Weekly insights */}
-          <div className="grid grid-cols-2 gap-4 p-3 bg-muted/30 rounded-lg">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 p-3 bg-muted/30 rounded-lg">
             <div className="text-center">
-              <div className="text-lg font-semibold">
+              <div className="text-base sm:text-lg font-semibold">
                 {weeklyData.find(d => d.total === Math.max(...weeklyData.map(wd => wd.total)))?.day || 'N/A'}
               </div>
               <div className="text-xs text-muted-foreground">Highest spending day</div>
             </div>
             <div className="text-center">
-              <div className="text-lg font-semibold">
+              <div className="text-base sm:text-lg font-semibold">
                 {formatCurrency(totalWeeklySpent / 7)}
               </div>
               <div className="text-xs text-muted-foreground">Daily average</div>
@@ -174,34 +176,37 @@ export function PatternsTab({ transactions, allocatedCategories }: PatternsTabPr
       {/* Monthly Trend Card */}
       <Card className="border-0 shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-primary" />
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             Monthly Spending Periods
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-sm">
             Spending breakdown for {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} ({daysInMonth} days)
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {monthlyData.map((periodData, index) => {
               const widthPercentage = (periodData.total / maxWeekTotal) * 100;
               const isCurrentPeriod = periodData.isCurrentPeriod;
               
               return (
                 <div key={periodData.period} className="space-y-2">
-                  <div className="flex justify-between items-center">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-0">
                     <span className={`text-sm font-medium ${isCurrentPeriod ? 'text-primary' : ''}`}>
-                      Period {index + 1} (Days {periodData.period}) {isCurrentPeriod ? '(Current)' : ''}
+                      <span className="hidden sm:inline">Period {index + 1} (Days {periodData.period})</span>
+                      <span className="sm:hidden">Days {periodData.period}</span>
+                      {isCurrentPeriod ? ' (Current)' : ''}
                     </span>
-                    <div className="text-right">
+                    <div className="text-left sm:text-right">
                       <span className="text-sm font-semibold">{formatCurrency(periodData.total)}</span>
-                      <span className="text-xs text-muted-foreground ml-2">
+                      {/* Hide transaction count on mobile for cleaner look */}
+                      <span className="hidden sm:inline text-xs text-muted-foreground ml-2">
                         ({periodData.count} {periodData.count === 1 ? 'transaction' : 'transactions'})
                       </span>
                     </div>
                   </div>
-                  <div className="w-full bg-muted rounded-full h-3 overflow-hidden">
+                  <div className="w-full bg-muted rounded-full h-2 sm:h-3 overflow-hidden">
                     <div
                       className={`h-full transition-all duration-500 rounded-full ${
                         isCurrentPeriod 

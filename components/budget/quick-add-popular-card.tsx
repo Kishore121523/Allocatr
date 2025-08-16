@@ -14,16 +14,16 @@ export function QuickAddPopularCard({ availablePopularCategories, onAddCategoryF
   if (availablePopularCategories.length === 0) return null;
 
   return (
-    <Card className="mb-6">
+    <Card className="mb-4 sm:mb-6">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Grid3X3 className="h-5 w-5" />
+        <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+          <Grid3X3 className="h-4 w-4 sm:h-5 sm:w-5" />
           Quick Add Popular Categories
         </CardTitle>
-        <CardDescription>Common categories that most people use</CardDescription>
+        <CardDescription className="text-sm">Common categories that most people use</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
           {availablePopularCategories.map((categoryName) => {
             const defaultCategory = DEFAULT_CATEGORIES.find((cat) => cat.name === categoryName);
             return (

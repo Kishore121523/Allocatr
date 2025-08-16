@@ -81,19 +81,19 @@ export function AddCategoriesCard({
     }
   }, [filteredAvailableCategories, showAllCategories]);
   return (
-    <Card className="mb-6">
+    <Card className="mb-4 sm:mb-6">
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0">
           <div>
-            <CardTitle>Add More Categories</CardTitle>
-            <CardDescription>Browse all available categories or create your own</CardDescription>
+            <CardTitle className="text-lg sm:text-xl">Add More Categories</CardTitle>
+            <CardDescription className="text-sm">Browse all available categories or create your own</CardDescription>
           </div>
-          <div className="flex gap-5">
-            <Button onClick={onAddCustomCategory} size="sm" variant="outline">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+            <Button onClick={onAddCustomCategory} size="sm" variant="outline" className="w-full sm:w-auto">
               <Plus className="h-4 w-4 mr-1" />
               Custom Category
             </Button>
-            <Button onClick={onToggleShowAll} size="sm" variant="outline">
+            <Button onClick={onToggleShowAll} size="sm" variant="outline" className="w-full sm:w-auto">
               <div ref={chevronRef} className="mr-1">
                 <ChevronDown className="h-4 w-4" />
               </div>
@@ -115,7 +115,7 @@ export function AddCategoriesCard({
               />
             </div>
 
-            <div ref={categoryButtonsRef} className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 max-h-64 overflow-y-auto scrollbar-hide">
+            <div ref={categoryButtonsRef} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 max-h-64 overflow-y-auto scrollbar-hide">
               {filteredAvailableCategories.map((category) => (
                 <Button
                   key={category.name}

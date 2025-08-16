@@ -22,7 +22,7 @@ export function KeyMetricsCards({ velocity, allocatedCategories }: KeyMetricsCar
   const overBudgetCount = overBudgetCategories.length;
 
   return (
-    <div className="grid gap-4 md:grid-cols-4 mb-8">
+    <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 mb-6 sm:mb-8">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium flex items-center gap-1">
@@ -47,7 +47,7 @@ export function KeyMetricsCards({ velocity, allocatedCategories }: KeyMetricsCar
           )}
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{(velocity.velocity * 100).toFixed(0)}%</div>
+          <div className="text-xl sm:text-2xl font-bold">{(velocity.velocity * 100).toFixed(0)}%</div>
           <p className="text-xs text-muted-foreground">
             {velocity.velocity > 1 ? 'Above' : 'Below'} expected pace
           </p>
@@ -60,7 +60,7 @@ export function KeyMetricsCards({ velocity, allocatedCategories }: KeyMetricsCar
           <DollarSign className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{formatCurrency(velocity.projectedMonthEnd)}</div>
+          <div className="text-xl sm:text-2xl font-bold">{formatCurrency(velocity.projectedMonthEnd)}</div>
           <p className="text-xs text-muted-foreground">Based on current rate</p>
         </CardContent>
       </Card>
@@ -71,7 +71,7 @@ export function KeyMetricsCards({ velocity, allocatedCategories }: KeyMetricsCar
           <Calendar className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">
+          <div className="text-xl sm:text-2xl font-bold">
             {formatCurrency(velocity.actualSpending / new Date().getDate())}
           </div>
           <p className="text-xs text-muted-foreground">Per day this month</p>
@@ -109,7 +109,7 @@ export function KeyMetricsCards({ velocity, allocatedCategories }: KeyMetricsCar
           )}
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{overBudgetCount}</div>
+          <div className="text-xl sm:text-2xl font-bold">{overBudgetCount}</div>
           <p className="text-xs text-muted-foreground">Out of {allocatedCategories.length} active categories</p>
         </CardContent>
       </Card>

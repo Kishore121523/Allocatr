@@ -28,8 +28,8 @@ export function TransactionsFilters({
   categories,
 }: TransactionsFiltersProps) {
   return (
-    <Card className="mb-6 border-0 shadow-sm">
-      <CardContent className="py-4">
+    <Card className="mb-4 sm:mb-6 border-0 shadow-sm">
+      <CardContent className="py-3 sm:py-4">
         <div className="flex flex-col md:flex-row gap-4">
           {/* Search and category filters */}
           <div className="flex flex-1 flex-col md:flex-row gap-4">

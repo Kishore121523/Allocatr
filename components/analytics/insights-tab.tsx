@@ -239,20 +239,20 @@ export function InsightsTab({ enhancedInsights, budget, allocatedCategories }: I
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Financial Health Overview */}
-      <div className="grid gap-6 md:grid-cols-3">
-        <Card className="border-0 shadow-sm col-span-2">
+      <div className="grid gap-4 sm:gap-6 md:grid-cols-3">
+        <Card className="border-0 shadow-sm md:col-span-2">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
               Budget Pulse
             </CardTitle>
-            <CardDescription>Your spending rhythm and tempo this month</CardDescription>
+            <CardDescription className="text-sm">Your spending rhythm and tempo this month</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mb-4">
               <div className="flex items-center gap-3">
-                <div className="text-4xl font-bold text-foreground">
+                <div className="text-2xl sm:text-4xl font-bold text-foreground">
                   {budgetPulse.intensity}
                 </div>
                 <div>
@@ -262,16 +262,17 @@ export function InsightsTab({ enhancedInsights, budget, allocatedCategories }: I
                   >
                     {budgetPulse.status}
                   </Badge>
-                  <p className="text-sm text-muted-foreground mt-1">{budgetPulse.description}</p>
+                  <p className="hidden sm:block text-sm text-muted-foreground mt-1">{budgetPulse.description}</p>
                 </div>
               </div>
-              <div className={`p-3 rounded-full ${spendingTrend.bgColor}`}>
+              {/* Hide trend icon on mobile for cleaner look */}
+              <div className={`hidden sm:block p-3 rounded-full ${spendingTrend.bgColor}`}>
                 <spendingTrend.icon className={`h-6 w-6 ${spendingTrend.color}`} />
               </div>
             </div>
             
-            {/* Pulse rhythm visualization */}
-            <div className="mb-4">
+            {/* Pulse rhythm visualization - hide on very small screens */}
+            <div className="mb-4 hidden sm:block">
               <div className="flex items-center justify-center py-6 bg-muted/50 rounded-lg border-2 border-border/50">
                 <div className="text-center">
                   <p className="text-xs text-muted-foreground mb-3 uppercase tracking-wide font-medium">Spending Rhythm</p>
@@ -280,18 +281,21 @@ export function InsightsTab({ enhancedInsights, budget, allocatedCategories }: I
               </div>
             </div>
             
-            <div className="grid grid-cols-3 gap-4 text-center text-sm">
+            <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center text-sm">
               <div>
                 <p className="font-semibold">{((enhancedInsights.velocity.velocity) * 100).toFixed(0)}%</p>
-                <p className="text-muted-foreground">Spending Rate</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Spending Rate</p>
               </div>
               <div>
                 <p className="font-semibold">{enhancedInsights.velocity.daysRemaining}</p>
-                <p className="text-muted-foreground">Days Left</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Days Left</p>
               </div>
               <div>
                 <p className="font-semibold">{enhancedInsights.uniqueCategories}/{allocatedCategories.length}</p>
-                <p className="text-muted-foreground">Active Categories</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  <span className="hidden sm:inline">Active Categories</span>
+                  <span className="sm:hidden">Categories</span>
+                </p>
               </div>
             </div>
           </CardContent>
@@ -299,28 +303,28 @@ export function InsightsTab({ enhancedInsights, budget, allocatedCategories }: I
 
         <Card className="border-0 shadow-sm">
           <CardHeader>
-            <CardTitle className="flex items-center gap-1">
-              <Clock className="h-5 w-5 text-primary" />
+            <CardTitle className="flex items-center gap-1 text-base sm:text-lg">
+              <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
               This Month
             </CardTitle>
-            <CardDescription>Key numbers at a glance</CardDescription>
+            <CardDescription className="text-sm">Key numbers at a glance</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">Spent so far</span>
-              <span className="font-semibold">{formatCurrency(enhancedInsights.velocity.actualSpending)}</span>
+              <span className="font-semibold text-sm sm:text-base">{formatCurrency(enhancedInsights.velocity.actualSpending)}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">Daily average</span>
-              <span className="font-semibold">{formatCurrency(enhancedInsights.avgTransactionSize)}</span>
+              <span className="font-semibold text-sm sm:text-base">{formatCurrency(enhancedInsights.avgTransactionSize)}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">Transactions</span>
-              <span className="font-semibold">{enhancedInsights.totalTransactions}</span>
+              <span className="font-semibold text-sm sm:text-base">{enhancedInsights.totalTransactions}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">Categories used</span>
-              <span className="font-semibold">{enhancedInsights.uniqueCategories}</span>
+              <span className="font-semibold text-sm sm:text-base">{enhancedInsights.uniqueCategories}</span>
             </div>
           </CardContent>
         </Card>
@@ -329,24 +333,24 @@ export function InsightsTab({ enhancedInsights, budget, allocatedCategories }: I
       {/* Key Insights */}
       <Card className="border-0 shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center gap-1">
-            <Lightbulb className="h-5 w-5 text-warning" />
+          <CardTitle className="flex items-center gap-1 text-base sm:text-lg">
+            <Lightbulb className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />
             Key Insights & Recommendations
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-sm">
             {topInsights.length > 0 ? 'Areas that need your attention' : 'Your spending looks healthy!'}
           </CardDescription>
         </CardHeader>
         <CardContent>
           {topInsights.length > 0 ? (
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
               {topInsights.map((insight, index) => (
                 <div 
                   key={index}
-                  className={`p-4 rounded-lg border-1 ${getPriorityColor(insight.priority)}`}
+                  className={`p-3 sm:p-4 rounded-lg border-1 ${getPriorityColor(insight.priority)}`}
                 >
                   <div className="flex items-start gap-2">
-                    <insight.icon className={`h-5 w-5 mt-0.5 flex-shrink-0 ${getPriorityIconColor(insight.priority)}`} />
+                    <insight.icon className={`h-4 w-4 sm:h-5 sm:w-5 mt-0.5 flex-shrink-0 ${getPriorityIconColor(insight.priority)}`} />
                     <div className="flex-1">
                       <h4 className="font-semibold text-sm mb-1">{insight.title}</h4>
                       <p className="text-sm text-muted-foreground mb-2">{insight.description}</p>
@@ -371,31 +375,31 @@ export function InsightsTab({ enhancedInsights, budget, allocatedCategories }: I
       {/* Monthly Projection */}
       <Card className="border-0 shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center gap-1">
-            <DollarSign className="h-5 w-5 text-success" />
+          <CardTitle className="flex items-center gap-1 text-base sm:text-lg">
+            <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-success" />
             Month-End Projection
           </CardTitle>
-          <CardDescription>Where you're headed based on current spending</CardDescription>
+          <CardDescription className="text-sm">Where you're headed based on current spending</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="text-center p-4 rounded-lg">
+          <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-3">
+            <div className="text-center p-3 sm:p-4 rounded-lg">
               <p className="text-sm text-muted-foreground mb-1">Projected spending</p>
-              <p className={`text-2xl font-bold ${enhancedInsights.velocity.projectedMonthEnd > budget.monthlyIncome ? 'text-destructive' : 'text-success'}`}>
+              <p className={`text-xl sm:text-2xl font-bold ${enhancedInsights.velocity.projectedMonthEnd > budget.monthlyIncome ? 'text-destructive' : 'text-success'}`}>
                 {formatCurrency(enhancedInsights.velocity.projectedMonthEnd)}
               </p>
             </div>
-            <div className="text-center p-4 rounded-lg">
+            <div className="text-center p-3 sm:p-4 rounded-lg">
               <p className="text-sm text-muted-foreground mb-1">Monthly budget</p>
-              <p className="text-2xl font-bold text-foreground">
+              <p className="text-xl sm:text-2xl font-bold text-foreground">
                 {formatCurrency(budget.monthlyIncome)}
               </p>
             </div>
-            <div className="text-center p-4 rounded-lg">
+            <div className="text-center p-3 sm:p-4 rounded-lg">
               <p className="text-sm text-muted-foreground mb-1">
                 {enhancedInsights.velocity.projectedMonthEnd > budget.monthlyIncome ? 'Over budget' : 'Under budget'}
               </p>
-              <p className={`text-2xl font-bold ${enhancedInsights.velocity.projectedMonthEnd > budget.monthlyIncome ? 'text-destructive' : 'text-success'}`}>
+              <p className={`text-xl sm:text-2xl font-bold ${enhancedInsights.velocity.projectedMonthEnd > budget.monthlyIncome ? 'text-destructive' : 'text-success'}`}>
                 {formatCurrency(Math.abs(budget.monthlyIncome - enhancedInsights.velocity.projectedMonthEnd))}
               </p>
             </div>

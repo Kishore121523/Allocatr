@@ -12,8 +12,8 @@ interface SaveActionsProps {
 
 export function SaveActions({ onSubmit, disabled, isSubmitting, hasExistingBudget }: SaveActionsProps) {
   return (
-    <div className="flex justify-end">
-      <Button onClick={onSubmit} disabled={disabled}>
+    <div className="flex justify-center sm:justify-end">
+      <Button onClick={onSubmit} disabled={disabled} className="w-full sm:w-auto">
         <Save className="h-4 w-4" />
         {isSubmitting ? 'Saving...' : hasExistingBudget ? 'Save Budget' : 'Create Budget & Continue'}
       </Button>

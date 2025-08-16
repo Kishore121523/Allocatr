@@ -112,20 +112,20 @@ export function MainSpendingChart({ spendingData, timeRange }: MainSpendingChart
   };
 
   return (
-    <Card className="mb-8">
+    <Card className="mb-6 sm:mb-8">
       <CardHeader>
-        <CardTitle className="text-foreground">Spending Trend</CardTitle>
-        <CardDescription className="text-muted-foreground">
+        <CardTitle className="text-base sm:text-lg text-foreground">Spending Trend</CardTitle>
+        <CardDescription className="text-sm text-muted-foreground">
           Your spending over the last {timeRange} days
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="h-80 mb-6">
+        <div className="h-64 sm:h-80 mb-4 sm:mb-6">
           <Line data={lineChartData} options={lineChartOptions} />
         </div>
         
         {/* Custom Legend */}
-        <div className="flex items-center justify-center gap-6 pt-4 border-t">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 pt-4 border-t">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-indigo-500"></div>
             <span className="text-sm text-muted-foreground">Daily Spending</span>

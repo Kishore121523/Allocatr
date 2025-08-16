@@ -302,7 +302,7 @@ export default function DashboardPage() {
       <div className="min-h-screen bg-background">
         <AppHeader />
         
-        <main className="container mx-auto px-4 py-8 max-w-7xl">
+        <main className="container mx-auto px-6 sm:px-4 py-6 sm:py-8 max-w-7xl">
           {isLoading ? (
             <div className="space-y-8">
             
@@ -310,7 +310,7 @@ export default function DashboardPage() {
           ) : !budget ? (
             <EmptyBudget />
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {/* Hero Visual Section with Bar Chart */}
               <Card className="overflow-hidden border-0 shadow-lg bg-gradient-to-br from-card to-card/95 animate-fade-in-up">
                 <CardHeader className="pb-2">
@@ -344,21 +344,21 @@ export default function DashboardPage() {
                 <CardContent>
                   <div className="space-y-4">
                     {/* Bar Chart */}
-                    <div className="h-80 bg-gradient-to-b from-background/50 to-background/30 backdrop-blur-sm rounded-xl p-6 border border-border/50">
+                    <div className="h-64 sm:h-80 bg-gradient-to-b from-background/50 to-background/30 backdrop-blur-sm rounded-xl p-3 sm:p-6 border border-border/50">
                       <Bar data={barChartData} options={barChartOptions} />
                     </div>
 
                     {/* Key Metrics Display */}
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                       {/* Income Card */}
-                      <div className="bg-gradient-to-br from-green-50/50 to-green-100/30 dark:from-green-950/20 dark:to-green-900/10 rounded-xl p-4 border border-green-200/50 dark:border-green-800/30">
+                      <div className="bg-gradient-to-br from-green-50/50 to-green-100/30 dark:from-green-950/20 dark:to-green-900/10 rounded-xl p-3 sm:p-4 border border-green-200/50 dark:border-green-800/30">
                         <div className="flex items-center justify-between mb-2">
                           <div className="p-2 bg-green-500/20 rounded-lg">
                             <DollarSign className="h-4 w-4 text-green-600 dark:text-green-400" />
                           </div>
                           <span className="text-xs font-medium text-green-600 dark:text-green-400">Monthly Income</span>
                         </div>
-                        <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                        <div className="text-xl sm:text-2xl font-bold text-green-600 dark:text-green-400">
                           {formatCurrency(budget.monthlyIncome)}
                         </div>
                         <p className="text-xs text-muted-foreground mt-1">
@@ -367,14 +367,14 @@ export default function DashboardPage() {
                       </div>
 
                       {/* Spent Card */}
-                      <div className="bg-gradient-to-br from-red-50/50 to-red-100/30 dark:from-red-950/20 dark:to-red-900/10 rounded-xl p-4 border border-red-200/50 dark:border-red-800/30">
+                      <div className="bg-gradient-to-br from-red-50/50 to-red-100/30 dark:from-red-950/20 dark:to-red-900/10 rounded-xl p-3 sm:p-4 border border-red-200/50 dark:border-red-800/30">
                         <div className="flex items-center justify-between mb-2">
                           <div className="p-2 bg-red-500/20 rounded-lg">
                             <TrendingDown className="h-4 w-4 text-red-600 dark:text-red-400" />
                           </div>
                           <span className="text-xs font-medium text-red-600 dark:text-red-400">Total Spent</span>
                         </div>
-                        <div className="text-2xl font-bold text-red-600 dark:text-red-400">
+                        <div className="text-xl sm:text-2xl font-bold text-red-600 dark:text-red-400">
                           {formatCurrency(stats.totalSpent)}
                         </div>
                         <p className="text-xs text-muted-foreground mt-1">
@@ -383,14 +383,14 @@ export default function DashboardPage() {
                       </div>
 
                       {/* Remaining Card */}
-                      <div className="bg-gradient-to-br from-purple-50/50 to-purple-100/30 dark:from-purple-950/20 dark:to-purple-900/10 rounded-xl p-4 border border-purple-200/50 dark:border-purple-800/30">
+                      <div className="bg-gradient-to-br from-purple-50/50 to-purple-100/30 dark:from-purple-950/20 dark:to-purple-900/10 rounded-xl p-3 sm:p-4 border border-purple-200/50 dark:border-purple-800/30">
                         <div className="flex items-center justify-between mb-2">
                           <div className="p-2 bg-purple-500/20 rounded-lg">
                             <PiggyBank className="h-4 w-4 text-purple-600 dark:text-purple-400" />
                           </div>
                           <span className="text-xs font-medium text-purple-600 dark:text-purple-400">Remaining</span>
                         </div>
-                        <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                        <div className="text-xl sm:text-2xl font-bold text-purple-600 dark:text-purple-400">
                           {formatCurrency(Math.max(0, remainingBudget))}
                         </div>
                         <p className="text-xs text-muted-foreground mt-1">
@@ -400,8 +400,8 @@ export default function DashboardPage() {
                     </div>
 
                     {/* Additional Quick Stats */}
-                    <div className="flex items-center justify-between px-4 py-3 bg-muted/30 rounded-lg">
-                      <div className="flex items-center gap-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 px-3 sm:px-4 py-3 bg-muted/30 rounded-lg">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
                         <div className="flex items-center gap-2">
                           <div className="w-2 h-2 rounded-full bg-blue-500"></div>
                           <span className="text-sm text-muted-foreground">Allocated:</span>
@@ -413,9 +413,8 @@ export default function DashboardPage() {
                           <span className="text-sm font-medium">{formatCurrency(unallocatedFunds)}</span>
                         </div>
                       </div>
-                      <div className="text-sm">
-                        <span className="text-muted-foreground">Transactions:</span>
-                        <span className="font-medium ml-2">{transactions.length}</span>
+                      <div className="text-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 px-3 sm:px-4 py-3 bg-muted/30 rounded-lg">
+                        <span className="text-muted-foreground">Transactions: {transactions.length}</span>
                       </div>
                     </div>
                   </div>
@@ -423,26 +422,26 @@ export default function DashboardPage() {
               </Card>
 
               {/* Quick Actions Grid - Improved Layout */}
-              <div ref={quickActionsRef} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div ref={quickActionsRef} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
                 {/* Recent Transactions Card */}
                 <Card 
                   ref={(el) => { cardRefs.current[0] = el; }}
                   className="group relative overflow-hidden border-0 shadow-md card-hover bg-gradient-to-br from-purple-500/10 to-purple-600/5 hover:from-purple-500/15 hover:to-purple-600/10"
                   style={{ opacity: shouldAnimatePageTransitions() ? 0 : 1 }}
                 >
-                  <CardContent className="p-6">
+                  <CardContent className="p-4 sm:p-6">
                     <button 
                       onClick={() => router.push('/transactions')}
-                      className="w-full h-full flex flex-col items-center justify-center space-y-3 group"
+                      className="w-full h-full flex flex-col items-center justify-center space-y-3 group min-h-[120px] sm:min-h-[140px]"
                     >
-                      <div className="p-4 bg-purple-500/20 rounded-full group-hover:bg-purple-500/30 transition-colors">
-                        <CreditCard className="h-8 w-8 text-purple-600 dark:text-purple-400" />
+                      <div className="p-3 sm:p-4 bg-purple-500/20 rounded-full group-hover:bg-purple-500/30 transition-colors">
+                        <CreditCard className="h-6 w-6 sm:h-8 sm:w-8 text-purple-600 dark:text-purple-400" />
                       </div>
                       <div className="text-center">
-                        <h3 className="font-semibold text-foreground">Recent Transactions</h3>
-                        <p className="text-sm text-muted-foreground mt-1">View all spending</p>
+                        <h3 className="font-semibold text-foreground text-sm sm:text-base">Recent Transactions</h3>
+                        <p className="text-xs sm:text-sm text-muted-foreground mt-1">View all spending</p>
                       </div>
-                      <ArrowRight className="absolute bottom-6 right-6 h-4 w-4 text-purple-600/50 group-hover:translate-x-1 transition-transform" />
+                      <ArrowRight className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 h-4 w-4 text-purple-600/50 group-hover:translate-x-1 transition-transform" />
                     </button>
                   </CardContent>
                 </Card>
@@ -453,19 +452,19 @@ export default function DashboardPage() {
                   className="group relative overflow-hidden border-0 shadow-md card-hover bg-gradient-to-br from-green-500/10 to-green-600/5 hover:from-green-500/15 hover:to-green-600/10"
                   style={{ opacity: shouldAnimatePageTransitions() ? 0 : 1 }}
                 >
-                  <CardContent className="p-6">
+                  <CardContent className="p-4 sm:p-6">
                     <button 
                       onClick={() => router.push('/budget')}
-                      className="w-full h-full flex flex-col items-center justify-center space-y-3 group"
+                      className="w-full h-full flex flex-col items-center justify-center space-y-3 group min-h-[120px] sm:min-h-[140px]"
                     >
-                      <div className="p-4 bg-green-500/20 rounded-full group-hover:bg-green-500/30 transition-colors">
-                        <Settings className="h-8 w-8 text-green-600 dark:text-green-400" />
+                      <div className="p-3 sm:p-4 bg-green-500/20 rounded-full group-hover:bg-green-500/30 transition-colors">
+                        <Settings className="h-6 w-6 sm:h-8 sm:w-8 text-green-600 dark:text-green-400" />
                       </div>
                       <div className="text-center">
-                        <h3 className="font-semibold text-foreground">Adjust Budget</h3>
-                        <p className="text-sm text-muted-foreground mt-1">Modify categories</p>
+                        <h3 className="font-semibold text-foreground text-sm sm:text-base">Adjust Budget</h3>
+                        <p className="text-xs sm:text-sm text-muted-foreground mt-1">Modify categories</p>
                       </div>
-                      <ArrowRight className="absolute bottom-6 right-6 h-4 w-4 text-green-600/50 group-hover:translate-x-1 transition-transform" />
+                      <ArrowRight className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 h-4 w-4 text-green-600/50 group-hover:translate-x-1 transition-transform" />
                     </button>
                   </CardContent>
                 </Card>
@@ -473,22 +472,22 @@ export default function DashboardPage() {
                 {/* View Analytics Card */}
                 <Card 
                   ref={(el) => { cardRefs.current[2] = el; }}
-                  className="group relative overflow-hidden border-0 shadow-md card-hover bg-gradient-to-br from-blue-500/10 to-blue-600/5 hover:from-blue-500/15 hover:to-blue-600/10"
+                  className="group relative overflow-hidden border-0 shadow-md card-hover bg-gradient-to-br from-blue-500/10 to-blue-600/5 hover:from-blue-500/15 hover:to-blue-600/10 sm:col-span-2 md:col-span-1"
                   style={{ opacity: shouldAnimatePageTransitions() ? 0 : 1 }}
                 >
-                  <CardContent className="p-6">
+                  <CardContent className="p-4 sm:p-6">
                     <button 
                       onClick={() => router.push('/analytics')}
-                      className="w-full h-full flex flex-col items-center justify-center space-y-3 group"
+                      className="w-full h-full flex flex-col items-center justify-center space-y-3 group min-h-[120px] sm:min-h-[140px]"
                     >
-                      <div className="p-4 bg-blue-500/20 rounded-full group-hover:bg-blue-500/30 transition-colors">
-                        <BarChart3 className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                      <div className="p-3 sm:p-4 bg-blue-500/20 rounded-full group-hover:bg-blue-500/30 transition-colors">
+                        <BarChart3 className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 dark:text-blue-400" />
                       </div>
                       <div className="text-center">
-                        <h3 className="font-semibold text-foreground">View Analytics</h3>
-                        <p className="text-sm text-muted-foreground mt-1">Deep spending insights</p>
+                        <h3 className="font-semibold text-foreground text-sm sm:text-base">View Analytics</h3>
+                        <p className="text-xs sm:text-sm text-muted-foreground mt-1">Deep spending insights</p>
                       </div>
-                      <ArrowRight className="absolute bottom-6 right-6 h-4 w-4 text-blue-600/50 group-hover:translate-x-1 transition-transform" />
+                      <ArrowRight className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 h-4 w-4 text-blue-600/50 group-hover:translate-x-1 transition-transform" />
                     </button>
                   </CardContent>
                 </Card>
@@ -521,37 +520,37 @@ export default function DashboardPage() {
                   </CollapsibleTrigger>
                   <CollapsibleContent>
                     <CardContent className="pt-0">
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-6">
-                        <div className="p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200/50 dark:border-blue-800/50">
-                          <div className="text-2xl font-bold text-blue-600">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 text-center mb-6">
+                        <div className="p-3 sm:p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200/50 dark:border-blue-800/50">
+                          <div className="text-xl sm:text-2xl font-bold text-blue-600">
                             {formatCurrency(budget.monthlyIncome)}
                           </div>
-                          <div className="text-sm text-muted-foreground">Total Income</div>
+                          <div className="text-xs sm:text-sm text-muted-foreground">Total Income</div>
                         </div>
-                        <div className="p-4 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200/50 dark:border-green-800/50">
-                          <div className="text-2xl font-bold text-green-600">
+                        <div className="p-3 sm:p-4 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200/50 dark:border-green-800/50">
+                          <div className="text-xl sm:text-2xl font-bold text-green-600">
                             {formatCurrency(totalAllocated)}
                           </div>
-                          <div className="text-sm text-muted-foreground">Allocated</div>
+                          <div className="text-xs sm:text-sm text-muted-foreground">Allocated</div>
                         </div>
-                        <div className="p-4 bg-red-50 dark:bg-red-950/20 rounded-lg border border-red-200/50 dark:border-red-800/50">
-                          <div className="text-2xl font-bold text-red-600">
+                        <div className="p-3 sm:p-4 bg-red-50 dark:bg-red-950/20 rounded-lg border border-red-200/50 dark:border-red-800/50">
+                          <div className="text-xl sm:text-2xl font-bold text-red-600">
                             {formatCurrency(stats.totalSpent)}
                           </div>
-                          <div className="text-sm text-muted-foreground">Spent</div>
+                          <div className="text-xs sm:text-sm text-muted-foreground">Spent</div>
                         </div>
-                        <div className="p-4 bg-gray-50 dark:bg-gray-950/20 rounded-lg border border-gray-200/50 dark:border-gray-800/50">
-                          <div className="text-2xl font-bold text-gray-600">
+                        <div className="p-3 sm:p-4 bg-gray-50 dark:bg-gray-950/20 rounded-lg border border-gray-200/50 dark:border-gray-800/50">
+                          <div className="text-xl sm:text-2xl font-bold text-gray-600">
                             {formatCurrency(unallocatedFunds)}
                           </div>
-                          <div className="text-sm text-muted-foreground">Unallocated</div>
+                          <div className="text-xs sm:text-sm text-muted-foreground">Unallocated</div>
                         </div>
                       </div>
                       
                       {/* Spending Distribution Chart */}
-                      <div className="bg-gradient-to-b from-background/50 to-background/30 rounded-xl p-6 border border-border/50">
-                        <h3 className="text-lg font-semibold mb-4 text-center">Budget Distribution</h3>
-                        <div className="h-80 flex justify-center">
+                      <div className="bg-gradient-to-b from-background/50 to-background/30 rounded-xl p-3 sm:p-6 border border-border/50">
+                        <h3 className="text-base sm:text-lg font-semibold mb-4 text-center">Budget Distribution</h3>
+                        <div className="h-64 sm:h-80 flex justify-center">
                           <Doughnut data={distributionData} options={distributionOptions} />
                         </div>
                       </div>

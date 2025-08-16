@@ -430,12 +430,12 @@ export default function BudgetPage() {
       <div className="min-h-screen bg-background">
         <AppHeader />
         
-        <main className="container mx-auto px-4 py-8 max-w-4xl">
-          <div ref={headerRef} className="mb-8" style={{ opacity: shouldAnimatePageTransitions() ? 0 : 1 }}>
-            <h1 className="text-3xl font-bold mb-2">
+        <main className="container mx-auto px-6 sm:px-4 py-6 sm:py-8 max-w-4xl">
+          <div ref={headerRef} className="mb-6 sm:mb-8" style={{ opacity: shouldAnimatePageTransitions() ? 0 : 1 }}>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-2">
               {budget ? 'Edit Budget' : 'Set Up Your Budget'}
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-sm sm:text-base text-muted-foreground">
               Allocate your income across categories. You can leave some unallocated if you prefer.
             </p>
           </div>

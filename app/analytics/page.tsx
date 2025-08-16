@@ -294,7 +294,7 @@ export default function AnalyticsPage() {
       <ProtectedRoute>
         <div className="min-h-screen bg-background">
           <AppHeader />
-          <main className="container mx-auto px-4 py-8">
+          <main className="container mx-auto px-6 sm:px-4 py-6 sm:py-8">
             <EmptyBudget />
           </main>
         </div>
@@ -311,10 +311,10 @@ export default function AnalyticsPage() {
       <div className="min-h-screen bg-background">
         <AppHeader />
         
-        <main className="container mx-auto px-4 py-8">
-          <div ref={headerRef} className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">Analytics</h1>
-            <p className="text-muted-foreground">Deep insights into your spending patterns</p>
+        <main className="container mx-auto px-6 sm:px-4 py-6 sm:py-8">
+          <div ref={headerRef} className="mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl font-bold mb-2">Analytics</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Deep insights into your spending patterns</p>
           </div>
 
           <div ref={metricsRef}>
@@ -332,14 +332,20 @@ export default function AnalyticsPage() {
             {/* Tabs for different views */}
             <Tabs value={activeTab} onValueChange={animateTabContent} className="space-y-4">
               <TabsList className="grid w-full grid-cols-3 dark:bg-muted/20 bg-muted rounded-md">
-                <TabsTrigger value="patterns" className="rounded-md outline-none dark:border-none focus:outline-none">Spending Patterns</TabsTrigger>
-                <TabsTrigger value="categories" className="rounded-md outline-none dark:border-none focus:outline-none">Category Analysis</TabsTrigger>
-                <TabsTrigger value="insights" className="rounded-md outline-none dark:border-none focus:outline-none">Insights</TabsTrigger>
+                <TabsTrigger value="patterns" className="rounded-md outline-none dark:border-none focus:outline-none text-xs sm:text-sm">
+                  <span className="hidden sm:inline">Spending Patterns</span>
+                  <span className="sm:hidden">Patterns</span>
+                </TabsTrigger>
+                <TabsTrigger value="categories" className="rounded-md outline-none dark:border-none focus:outline-none text-xs sm:text-sm">
+                  <span className="hidden sm:inline">Category Analysis</span>
+                  <span className="sm:hidden">Categories</span>
+                </TabsTrigger>
+                <TabsTrigger value="insights" className="rounded-md outline-none dark:border-none focus:outline-none text-xs sm:text-sm">Insights</TabsTrigger>
               </TabsList>
 
               <TabsContent 
                 value="patterns" 
-                className="space-y-6"
+                className="space-y-4 sm:space-y-6"
                 ref={(el) => { tabContentRefs.current.patterns = el; }}
               >
                 <PatternsTab transactions={transactions as any} allocatedCategories={allocatedCategories as any} />
@@ -347,7 +353,7 @@ export default function AnalyticsPage() {
 
               <TabsContent 
                 value="categories" 
-                className="space-y-6"
+                className="space-y-4 sm:space-y-6"
                 ref={(el) => { tabContentRefs.current.categories = el; }}
               >
                 <CategoriesTab allocatedCategories={allocatedCategories as any} />
@@ -355,7 +361,7 @@ export default function AnalyticsPage() {
 
               <TabsContent 
                 value="insights" 
-                className="space-y-6"
+                className="space-y-4 sm:space-y-6"
                 ref={(el) => { tabContentRefs.current.insights = el; }}
               >
                 <InsightsTab enhancedInsights={enhancedInsights as any} budget={budget} allocatedCategories={allocatedCategories as any} />

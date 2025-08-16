@@ -106,7 +106,7 @@ export default function TransactionsPage() {
       <div className="min-h-screen bg-background">
         <AppHeader />
 
-        <main className="container mx-auto px-4 py-8 max-w-4xl">
+        <main className="container mx-auto px-6 sm:px-4 py-6 sm:py-8 max-w-4xl">
           <div ref={headerRef}>
             <TransactionsHeader onAdd={openAdd} />
           </div>

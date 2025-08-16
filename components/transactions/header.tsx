@@ -10,12 +10,12 @@ type TransactionsHeaderProps = {
 
 export function TransactionsHeader({ onAdd }: TransactionsHeaderProps) {
   return (
-    <div className="mb-6 flex items-center justify-between">
+    <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0">
       <div>
-        <h1 className="text-3xl font-bold">Transactions</h1>
-        <p className="text-muted-foreground">Review, add, edit, and delete your expenses</p>
+        <h1 className="text-2xl sm:text-3xl font-bold">Transactions</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">Review, add, edit, and delete your expenses</p>
       </div>
-      <Button onClick={onAdd}>
+      <Button onClick={onAdd} className="w-full sm:w-auto">
         <Plus className="h-4 w-4" />
         Add Expense
       </Button>

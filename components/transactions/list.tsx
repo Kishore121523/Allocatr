@@ -27,8 +27,8 @@ export function TransactionsList({
 }: TransactionsListProps) {
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Transactions</CardTitle>
+      <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+        <CardTitle className="text-lg sm:text-xl">Transactions</CardTitle>
         <div className="text-sm text-muted-foreground">
           Total: <span className="font-semibold text-foreground">{formatCurrency(total)}</span>
         </div>
@@ -46,15 +46,15 @@ export function TransactionsList({
             <p className="text-xs text-muted-foreground">Try adjusting filters or add a new expense.</p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             {transactions.map((t) => (
-              <div key={t.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-accent">
+              <div key={t.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-lg hover:bg-accent gap-3 sm:gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="font-medium text-sm truncate">{t.description}</p>
                     {t.isAICategorized && <Sparkles className="h-3 w-3 text-primary" />}
                   </div>
-                  <div className="flex items-center gap-2 mt-1">
+                  <div className="flex items-center gap-2 mt-1 flex-wrap">
                     {!!t.categoryName && (
                       <Badge 
                         variant="outline" 
@@ -71,16 +71,16 @@ export function TransactionsList({
                     <span className="text-xs text-muted-foreground">{formatDate(t.date)}</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <div className="text-right min-w-[90px]">
-                    <p className="font-semibold">{formatCurrency(t.amount)}</p>
+                <div className="flex items-center justify-between sm:justify-end sm:gap-4">
+                  <div className="text-left sm:text-right min-w-[90px]">
+                    <p className="font-semibold text-base sm:text-sm">{formatCurrency(t.amount)}</p>
                   </div>
                   <div className="flex items-center gap-1">
-                    <Button variant="ghost" size="icon" onClick={() => onEdit(t)}>
-                      <Pencil className="h-4 w-4" />
+                    <Button variant="ghost" size="icon" onClick={() => onEdit(t)} className="h-8 w-8 sm:h-9 sm:w-9">
+                      <Pencil className="h-3 w-3 sm:h-4 sm:w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={() => onDelete(t.id)}>
-                      <Trash2 className="h-4 w-4" />
+                    <Button variant="ghost" size="icon" onClick={() => onDelete(t.id)} className="h-8 w-8 sm:h-9 sm:w-9">
+                      <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                     </Button>
                   </div>
                 </div>

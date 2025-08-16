@@ -350,17 +350,17 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px] [&>button]:hidden">
+      <DialogContent className="w-[90vw] max-w-[500px] max-h-[90vh] overflow-y-auto p-4 sm:p-6 [&>button]:hidden">
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle className="text-lg sm:text-xl">
             {transaction ? 'Edit Expense' : 'Add Expense'}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-sm">
             Enter expense details or use natural language input with AI assistance.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {/* Natural Language Input */}
           {!transaction && (
             <div className="space-y-3">
@@ -371,7 +371,7 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
                     placeholder="Type or Speak: 'I bought coffee at Starbucks for $2.50'"
                     value={naturalInput}
                     onChange={(e) => setNaturalInput(e.target.value)}
-                    className="resize-none"
+                    className="resize-none text-sm"
                     rows={2}
                   />
                 </div>
@@ -381,6 +381,7 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
                     variant={isListening ? 'destructive' : 'outline'}
                     size="icon"
                     onClick={isListening ? stopListening : startListening}
+                    className="flex-shrink-0"
                   >
                     {isListening ? (
                       <MicOff className="h-4 w-4" />
@@ -395,7 +396,7 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
                 size="sm"
                 onClick={() => handleAICategorization(naturalInput)}
                 disabled={!naturalInput.trim() || isAILoading}
-                className="w-full relative bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white overflow-hidden group transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none
+                className="w-full relative bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white overflow-hidden group transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none text-sm
 "
               >
                 {/* Shimmer effect */}
@@ -404,12 +405,13 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
                 {isAILoading ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin mr-1 relative z-10" />
-                    Processing...
+                    <span className="hidden sm:inline">Processing...</span>
+                    <span className="sm:hidden">Processing</span>
                   </>
                 ) : (
                   <>
                     <Wand2 className="h-4 w-4 mr-1 relative z-10" />
-                    Extract with AI
+                    <span className="sm:inline">Extract with AI</span>
                   </>
                 )}
               </Button>
@@ -423,29 +425,35 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
           )}
           <div className="border-b border-primary/30"></div>
           {/* Manual Input Fields */}
-          <div className="grid gap-4 mb-2">
-            <div className="grid grid-cols-2 gap-4 mt-1">
+          <div className="grid gap-3 sm:gap-4 mb-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mt-1">
               <div className="space-y-2">
-                <Label htmlFor="amount">Amount</Label>
+                <Label htmlFor="amount" className="text-sm">Amount</Label>
                 <Input
                   id="amount"
                   type="text"
                   placeholder="$0.00"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
+                  className="text-sm"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="date">Date</Label>
+                <Label htmlFor="date" className="text-sm">Date</Label>
                 <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
                   <PopoverTrigger asChild>
                     <Button
                       id="date"
                       variant="outline"
-                      className="w-full justify-start text-left font-normal"
+                      className="w-full justify-start text-left font-normal text-sm"
                     >
-                      <CalendarIcon className="h-4 w-4" />
-                      {date ? format(parseYYYYMMDDToLocalDate(date), 'PPP') : 'Pick a date'}
+                      <CalendarIcon className="h-4 w-4 mr-2" />
+                      <span className="hidden sm:inline">
+                        {date ? format(parseYYYYMMDDToLocalDate(date), 'PPP') : 'Pick a date'}
+                      </span>
+                      <span className="sm:hidden">
+                        {date ? format(parseYYYYMMDDToLocalDate(date), 'MM/dd/yyyy') : 'Pick date'}
+                      </span>
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -467,22 +475,23 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description" className="text-sm">Description</Label>
               <Input
                 id="description"
                 placeholder="What was this expense for?"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                className="text-sm"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="category">Category</Label>
+              <Label htmlFor="category" className="text-sm">Category</Label>
               <Select value={categoryId} onValueChange={setCategoryId}>
-                <SelectTrigger>
+                <SelectTrigger className="text-sm">
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="max-h-[400px]" position="popper" side="bottom" align="start" sideOffset={4}>
                   {/* Existing budget categories */}
                   {budget?.categories.map((category) => (
                     <SelectItem key={category.id} value={category.id}>
@@ -546,12 +555,12 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
           </div>
         </div>
 
-        <div className="flex justify-end gap-3">
-          <Button variant="outline" onClick={onClose}>
+        <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
+          <Button variant="outline" onClick={onClose} className="w-full sm:w-auto order-2 sm:order-1">
             Cancel
           </Button>
-          <Button onClick={handleSubmit} disabled={isSubmitting}>
-            {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+          <Button onClick={handleSubmit} disabled={isSubmitting} className="w-full sm:w-auto order-1 sm:order-2">
+            {isSubmitting && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
             {transaction ? 'Update' : 'Add'} Expense
           </Button>
         </div>
@@ -559,10 +568,10 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
 
       {/* Custom Confirmation Dialog */}
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <DialogContent className="sm:max-w-[450px]">
+        <DialogContent className="w-[90vw] max-w-[450px] p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-amber-600">
-              <AlertTriangle className="h-5 w-5" />
+            <DialogTitle className="flex items-center gap-2 text-amber-600 text-base sm:text-lg">
+              <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5" />
               {pendingSubmission?.category?.id.startsWith('temp-') ? 'Add New Category' : 'No Budget Allocated'}
             </DialogTitle>
             <DialogDescription className="text-sm text-foreground pt-2">
@@ -586,28 +595,28 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {budget && (() => {
               const { unallocatedAmount } = calculateBudgetFlexibility(budget);
               return (
                 <>
                   <div className="p-3 bg-muted/50 rounded-lg">
                     <div className="text-sm text-muted-foreground">Available unallocated funds</div>
-                    <div className="text-lg font-semibold text-emerald-600">
+                    <div className="text-base sm:text-lg font-semibold text-emerald-600">
                       ${unallocatedAmount.toFixed(2)}
                     </div>
                   </div>
 
                   <div className="space-y-3">
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-start space-x-2">
                       <input
                         type="checkbox"
                         id="setBudget"
                         checked={shouldSetBudget}
                         onChange={(e) => setShouldSetBudget(e.target.checked)}
-                        className="rounded"
+                        className="rounded mt-1"
                       />
-                      <Label htmlFor="setBudget" className="text-sm font-medium">
+                      <Label htmlFor="setBudget" className="text-sm font-medium leading-relaxed">
                         {pendingSubmission?.category?.id.startsWith('temp-') 
                           ? 'Add category with budget allocation' 
                           : 'Set budget for this category'}
@@ -625,6 +634,7 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
                           placeholder="$0.00"
                           value={budgetAmount}
                           onChange={(e) => setBudgetAmount(e.target.value)}
+                          className="text-sm"
                         />
                         {budgetAmount && (() => {
                           const parsedAmount = parseCurrencyInput(budgetAmount);
@@ -657,22 +667,29 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
             })()}
           </div>
           
-          <div className="flex justify-end gap-3 pt-4">
-            <Button variant="outline" onClick={handleCancelSubmission}>
+          <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 pt-4">
+            <Button variant="outline" onClick={handleCancelSubmission} className="w-full sm:w-auto order-2 sm:order-1">
               Cancel
             </Button>
             <Button 
               onClick={handleConfirmSubmission} 
-              className="bg-primary"
+              className="bg-primary w-full sm:w-auto order-1 sm:order-2"
               disabled={shouldSetBudget && budget ? (() => {
                 const { unallocatedAmount } = calculateBudgetFlexibility(budget);
                 const parsedAmount = parseCurrencyInput(budgetAmount);
                 return parsedAmount > unallocatedAmount || parsedAmount <= 0;
               })() : false}
             >
-              {pendingSubmission?.category?.id.startsWith('temp-') 
-                ? (shouldSetBudget ? 'Add Category & Expense' : 'Add Category & Expense')
-                : (shouldSetBudget ? 'Set Budget & Add Expense' : 'Add Expense')}
+              <span className="hidden sm:inline">
+                {pendingSubmission?.category?.id.startsWith('temp-') 
+                  ? (shouldSetBudget ? 'Add Category & Expense' : 'Add Category & Expense')
+                  : (shouldSetBudget ? 'Set Budget & Add Expense' : 'Add Expense')}
+              </span>
+              <span className="sm:hidden">
+                {pendingSubmission?.category?.id.startsWith('temp-') 
+                  ? 'Add Category'
+                  : (shouldSetBudget ? 'Set Budget' : 'Add Expense')}
+              </span>
             </Button>
           </div>
         </DialogContent>
