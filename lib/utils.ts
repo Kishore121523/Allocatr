@@ -58,8 +58,20 @@ export function parseYYYYMMDDToLocalDate(value: string): Date {
 }
 
 export function todayLocalYYYYMMDD(): string {
-  return formatLocalDateYYYYMMDD(new Date());
+  // Create a date that represents "today" in the user's local timezone
+  // This ensures we get the correct date regardless of server timezone
+  const now = new Date();
+  
+  // Get timezone offset in minutes and convert to milliseconds
+  const timezoneOffset = now.getTimezoneOffset() * 60000;
+  
+  // Create a new date adjusted for timezone offset
+  // This gives us the local date as if we were in the user's timezone
+  const localDate = new Date(now.getTime() - timezoneOffset);
+  
+  return formatLocalDateYYYYMMDD(localDate);
 }
+
 
 export function calculatePercentage(spent: number, allocated: number): number {
   if (allocated === 0) return 0;
