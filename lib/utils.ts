@@ -58,20 +58,21 @@ export function parseYYYYMMDDToLocalDate(value: string): Date {
 }
 
 export function todayLocalYYYYMMDD(): string {
-  // Create a date that represents "today" in the user's local timezone
-  // This ensures we get the correct date regardless of server timezone
+  // Use Intl API for reliable timezone-aware date formatting
+  // This works correctly regardless of server timezone
   const now = new Date();
+  const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   
-  // Get timezone offset in minutes and convert to milliseconds
-  const timezoneOffset = now.getTimezoneOffset() * 60000;
+  const formatter = new Intl.DateTimeFormat('en-CA', { 
+    timeZone: userTimezone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
   
-  // Create a new date adjusted for timezone offset
-  // This gives us the local date as if we were in the user's timezone
-  const localDate = new Date(now.getTime() - timezoneOffset);
-  
-  return formatLocalDateYYYYMMDD(localDate);
+  // en-CA format gives us YYYY-MM-DD directly
+  return formatter.format(now);
 }
-
 
 export function calculatePercentage(spent: number, allocated: number): number {
   if (allocated === 0) return 0;
