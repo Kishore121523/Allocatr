@@ -14,7 +14,7 @@ import { db, COLLECTIONS } from '@/lib/firebase';
 import { useAuth } from '@/providers/auth-provider';
 import { UserPreferences } from '@/types';
 import { getMonthKey } from '@/lib/utils';
-import { migrateLocalStorageToFirebase, clearLegacyLocalStorage, hasBeenMigrated } from '@/lib/migration-utils';
+
 import { toast } from 'sonner';
 
 export function useUserPreferences() {
@@ -44,17 +44,12 @@ export function useUserPreferences() {
             updatedAt: data.updatedAt?.toDate() || new Date(),
           } as UserPreferences);
         } else {
-          // Create preferences - check for migration from localStorage
-          let migrationData: ReturnType<typeof migrateLocalStorageToFirebase> | undefined;
-          if (!hasBeenMigrated()) {
-            migrationData = migrateLocalStorageToFirebase();
-          }
-          
+          // Create default preferences
           const defaultPreferences: Omit<UserPreferences, 'id'> = {
             userId: user.id,
-            selectedMonth: migrationData?.selectedMonth || getMonthKey(),
-            lastActiveDate: migrationData?.lastActiveDate || new Date().toISOString(),
-            autoAdvanceMonth: migrationData?.autoAdvanceMonth ?? true,
+            selectedMonth: getMonthKey(),
+            lastActiveDate: new Date().toISOString(),
+            autoAdvanceMonth: true,
             createdAt: new Date(),
             updatedAt: new Date(),
           };
@@ -63,15 +58,6 @@ export function useUserPreferences() {
             ...defaultPreferences,
             createdAt: Timestamp.now(),
             updatedAt: Timestamp.now(),
-          }).then(() => {
-            // Clear localStorage after successful Firebase write
-            if (migrationData && !hasBeenMigrated()) {
-              clearLegacyLocalStorage();
-              toast.success('Settings synced!', {
-                description: 'Your preferences are now synced across all devices.',
-                duration: 3000,
-              });
-            }
           }).catch(console.error);
         }
         setLoading(false);

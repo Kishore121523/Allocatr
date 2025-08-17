@@ -87,10 +87,21 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
     if (transaction) {
       setAmount(transaction.amount.toString());
       setDescription(transaction.description);
-      setCategoryId(transaction.categoryId);
+      
+      // Check if the category ID is valid (exists in budget categories)
+      const isValidCategory = budget?.categories.some(cat => cat.id === transaction.categoryId);
+      if (isValidCategory) {
+        setCategoryId(transaction.categoryId);
+      } else {
+        // If category ID is invalid (e.g., 'new-entertainment'), clear it
+        // This will show the category as unselected in the dropdown
+        setCategoryId('');
+        console.warn(`Transaction has invalid category ID: ${transaction.categoryId}`);
+      }
+      
       setDate(formatLocalDateYYYYMMDD(transaction.date));
     }
-  }, [transaction]);
+  }, [transaction, budget]);
 
   const handleAICategorization = async (input: string) => {
     if (!input.trim() || !budget) return;
@@ -193,19 +204,133 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
     }
 
     // Proceed with normal submission
-    await performSubmission();
+    await saveTransactionWithCategory(categoryId, '', 0, false);
   };
 
-  const performSubmission = async (skipWarning = false) => {
-    const parsedAmount = parseCurrencyInput(amount);
-    // For new categories, we need to find the category in the updated budget
-    let category = budget?.categories.find((c) => c.id === categoryId);
+
+
+  const handleConfirmSubmission = async () => {
+    let newCategoryId = categoryId;
+    let newCategoryName = '';
+    let newCategoryAllocatedAmount = 0;
     
-    // If category not found and we have pending submission, use that category info
+    if (shouldSetBudget && pendingSubmission && budgetAmount.trim()) {
+      const parsedBudgetAmount = parseCurrencyInput(budgetAmount);
+      
+      if (parsedBudgetAmount > 0) {
+        try {
+          // Check if this is a new category that needs to be added to the budget
+          if (pendingSubmission.category.id.startsWith('temp-')) {
+            newCategoryId = await addNewCategoryToBudget(pendingSubmission.category, parsedBudgetAmount);
+            newCategoryName = pendingSubmission.category.name;
+            newCategoryAllocatedAmount = parsedBudgetAmount;
+          } else {
+            // Update existing category budget
+            await updateCategoryBudget(pendingSubmission.category.id, parsedBudgetAmount);
+            newCategoryName = pendingSubmission.category.name;
+            newCategoryAllocatedAmount = parsedBudgetAmount;
+          }
+          
+          toast.success('Budget allocated', {
+            description: `Set $${parsedBudgetAmount.toFixed(2)} budget for "${pendingSubmission.category.name}".`,
+          });
+        } catch (error) {
+          console.error('Error updating budget:', error);
+          toast.error('Failed to update budget', {
+            description: 'Please try again.',
+          });
+          return;
+        }
+      }
+    } else if (pendingSubmission?.category.id.startsWith('temp-')) {
+      // Add new category with zero budget
+      try {
+        newCategoryId = await addNewCategoryToBudget(pendingSubmission.category, 0);
+        newCategoryName = pendingSubmission.category.name;
+        newCategoryAllocatedAmount = 0;
+      } catch (error) {
+        console.error('Error adding new category:', error);
+        toast.error('Failed to add category', {
+          description: 'Please try again.',
+        });
+        return;
+      }
+    }
+
+    setShowConfirmDialog(false);
+    setPendingSubmission(null);
+    setBudgetAmount('');
+    setShouldSetBudget(false);
+    
+    // Now save the transaction with the correct category ID and info
+    await saveTransactionWithCategory(newCategoryId, newCategoryName, newCategoryAllocatedAmount, true);
+  };
+
+  const handleCancelSubmission = () => {
+    setShowConfirmDialog(false);
+    setPendingSubmission(null);
+    setBudgetAmount('');
+    setShouldSetBudget(false);
+  };
+
+  const updateCategoryBudget = async (categoryId: string, newBudgetAmount: number) => {
+    if (!budget) return;
+
+    const updatedCategories = budget.categories.map(cat => 
+      cat.id === categoryId 
+        ? { ...cat, allocatedAmount: newBudgetAmount }
+        : cat
+    );
+
+    await updateBudget({ categories: updatedCategories });
+  };
+
+  const addNewCategoryToBudget = async (newCategory: any, budgetAmount: number): Promise<string> => {
+    if (!budget) return '';
+
+    // Generate a proper ID for the new category
+    const categoryId = `${newCategory.name.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
+    
+    const categoryToAdd = {
+      id: categoryId,
+      name: newCategory.name,
+      color: newCategory.color,
+      icon: newCategory.icon,
+      allocatedAmount: budgetAmount,
+      isCustom: false,
+    };
+
+    const updatedCategories = [...budget.categories, categoryToAdd];
+    await updateBudget({ categories: updatedCategories });
+    
+    return categoryId;
+  };
+
+  const saveTransactionWithCategory = async (
+    categoryIdToUse: string, 
+    categoryName: string = '', 
+    categoryAllocatedAmount: number = 0,
+    skipWarning = false
+  ) => {
+    const parsedAmount = parseCurrencyInput(amount);
+    
+    // Use the provided category info if available, otherwise try to find it in budget
+    let category = null;
+    if (categoryName) {
+      category = {
+        id: categoryIdToUse,
+        name: categoryName,
+        allocatedAmount: categoryAllocatedAmount
+      };
+    } else {
+      category = budget?.categories.find((c) => c.id === categoryIdToUse);
+    }
+    
+    // If category still not found and we have pending submission, use that category info
     if (!category && pendingSubmission?.category) {
       category = {
         ...pendingSubmission.category,
-        id: categoryId // Use the updated category ID
+        id: categoryIdToUse
       };
     }
 
@@ -215,7 +340,7 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
       const transactionData = {
         amount: parsedAmount,
         description: description.trim(),
-        categoryId,
+        categoryId: categoryIdToUse,
         categoryName: category?.name || '',
         date: parseYYYYMMDDToLocalDate(date),
         isAICategorized: isAISuggestion,
@@ -262,100 +387,14 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
     }
   };
 
-  const handleConfirmSubmission = async () => {
-    if (shouldSetBudget && pendingSubmission && budgetAmount.trim()) {
-      const parsedBudgetAmount = parseCurrencyInput(budgetAmount);
-      
-      if (parsedBudgetAmount > 0) {
-        try {
-          // Check if this is a new category that needs to be added to the budget
-          if (pendingSubmission.category.id.startsWith('temp-')) {
-            await addNewCategoryToBudget(pendingSubmission.category, parsedBudgetAmount);
-          } else {
-            // Update existing category budget
-            await updateCategoryBudget(pendingSubmission.category.id, parsedBudgetAmount);
-          }
-          
-          toast.success('Budget allocated', {
-            description: `Set $${parsedBudgetAmount.toFixed(2)} budget for "${pendingSubmission.category.name}".`,
-          });
-        } catch (error) {
-          console.error('Error updating budget:', error);
-          toast.error('Failed to update budget', {
-            description: 'Please try again.',
-          });
-          return;
-        }
-      }
-    } else if (pendingSubmission?.category.id.startsWith('temp-')) {
-      // Add new category with zero budget
-      try {
-        await addNewCategoryToBudget(pendingSubmission.category, 0);
-      } catch (error) {
-        console.error('Error adding new category:', error);
-        toast.error('Failed to add category', {
-          description: 'Please try again.',
-        });
-        return;
-      }
-    }
-
-    setShowConfirmDialog(false);
-    setPendingSubmission(null);
-    setBudgetAmount('');
-    setShouldSetBudget(false);
-    await performSubmission(true); // Skip warning since we handled it
-  };
-
-  const handleCancelSubmission = () => {
-    setShowConfirmDialog(false);
-    setPendingSubmission(null);
-    setBudgetAmount('');
-    setShouldSetBudget(false);
-  };
-
-  const updateCategoryBudget = async (categoryId: string, newBudgetAmount: number) => {
-    if (!budget) return;
-
-    const updatedCategories = budget.categories.map(cat => 
-      cat.id === categoryId 
-        ? { ...cat, allocatedAmount: newBudgetAmount }
-        : cat
-    );
-
-    await updateBudget({ categories: updatedCategories });
-  };
-
-  const addNewCategoryToBudget = async (newCategory: any, budgetAmount: number) => {
-    if (!budget) return;
-
-    // Generate a proper ID for the new category
-    const categoryId = `${newCategory.name.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
-    
-    const categoryToAdd = {
-      id: categoryId,
-      name: newCategory.name,
-      color: newCategory.color,
-      icon: newCategory.icon,
-      allocatedAmount: budgetAmount,
-      isCustom: false,
-    };
-
-    const updatedCategories = [...budget.categories, categoryToAdd];
-    await updateBudget({ categories: updatedCategories });
-    
-    // Update the categoryId state to the new category ID for the transaction
-    setCategoryId(categoryId);
-  };
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-[90vw] max-w-[500px] max-h-[90vh] overflow-y-auto p-4 sm:p-6 [&>button]:hidden">
         <DialogHeader>
-          <DialogTitle className="text-lg sm:text-xl">
+          <DialogTitle className="text-xl sm:text-xl">
             {transaction ? 'Edit Expense' : 'Add Expense'}
           </DialogTitle>
-          <DialogDescription className="text-sm">
+          <DialogDescription className="hidden sm:block text-sm">
             Enter expense details or use natural language input with AI assistance.
           </DialogDescription>
         </DialogHeader>
@@ -489,7 +528,7 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
               <Label htmlFor="category" className="text-sm">Category</Label>
               <Select value={categoryId} onValueChange={setCategoryId}>
                 <SelectTrigger className="text-sm">
-                  <SelectValue placeholder="Select a category" />
+                  <SelectValue placeholder={transaction && !categoryId && transaction.categoryName ? `Previously: ${transaction.categoryName}` : "Select a category"} />
                 </SelectTrigger>
                 <SelectContent className="max-h-[400px]" position="popper" side="bottom" align="start" sideOffset={4}>
                   {/* Existing budget categories */}

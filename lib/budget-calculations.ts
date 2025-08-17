@@ -38,6 +38,8 @@ export function calculateCategorySpending(
       } else {
         category.percentageUsed = 0;
       }
+      
+
     } else {
       // Handle transactions for categories that no longer exist in budget
       // This can happen if a category was deleted after transactions were created

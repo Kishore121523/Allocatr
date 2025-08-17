@@ -20,6 +20,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { formatCurrency } from '@/lib/utils';
+import { useAuth } from '@/providers/auth-provider';
 import { 
   ChevronDown, 
   ChevronUp, 
@@ -62,11 +63,11 @@ export default function DashboardPage() {
   const { currentMonth, isCurrentMonth } = useMonth();
   const { budget, loading: budgetLoading } = useBudget(currentMonth);
   const { transactions, loading: transactionsLoading } = useTransactions(currentMonth);
+  const { user } = useAuth();
   const [stats, setStats] = useState(calculateDashboardStats(null, []));
   const [categorySpending, setCategorySpending] = useState<any[]>([]);
   const [categoryColors, setCategoryColors] = useState<Map<string, string>>(new Map());
-  
-  // Collapsible states
+    // Collapsible states
   const [isBreakdownOpen, setIsBreakdownOpen] = useState(false);
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
   const [isTransactionsOpen, setIsTransactionsOpen] = useState(false);
@@ -157,6 +158,8 @@ export default function DashboardPage() {
       isUnallocated: true,
     }
   ] : filteredCategorySpending;
+
+
 
   // Simplified bar chart data without labels
   const barChartData = {
@@ -326,17 +329,21 @@ export default function DashboardPage() {
                         }
                       </CardDescription>
                     </div>
-                    {!isCurrentMonth ? (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-3 py-1 rounded-full">
-                        <Calendar className="h-4 w-4" />
-                        Historical View
-                      </div>
-                    ) : (new Date().getDate() <= 3 && (
-                      <div className="flex items-center gap-2 text-sm text-green-600 bg-green-50 dark:bg-green-950/20 px-3 py-1 rounded-full">
-                        <Calendar className="h-4 w-4" />
-                        New Month
-                      </div>
-                    ))}
+                    <div className="flex items-center gap-2">
+                      {!isCurrentMonth ? (
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-3 py-1 rounded-full">
+                          <Calendar className="h-4 w-4" />
+                          Historical View
+                        </div>
+                      ) : (new Date().getDate() <= 3 && (
+                        <div className="flex items-center gap-2 text-sm text-green-600 bg-green-50 dark:bg-green-950/20 px-3 py-1 rounded-full">
+                          <Calendar className="h-4 w-4" />
+                          New Month
+                        </div>
+                      ))}
+                      
+
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent>
