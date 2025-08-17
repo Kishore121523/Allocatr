@@ -1,5 +1,3 @@
-// components/expense/expense-modal.tsx
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -103,6 +101,32 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
     }
   }, [transaction, budget]);
 
+  // Helper function to safely parse AI date to local format
+  const parseAIDateToLocal = (aiDate: string): string => {
+    try {
+      // If the AI date is already in YYYY-MM-DD format, validate and return it
+      if (/^\d{4}-\d{2}-\d{2}$/.test(aiDate)) {
+        const testDate = parseYYYYMMDDToLocalDate(aiDate);
+        // Make sure it's a valid date and not in the future
+        if (testDate && testDate <= new Date()) {
+          return aiDate;
+        }
+      }
+      
+      // Try to parse other date formats and convert to local YYYY-MM-DD
+      const parsedDate = new Date(aiDate);
+      if (!isNaN(parsedDate.getTime()) && parsedDate <= new Date()) {
+        return formatLocalDateYYYYMMDD(parsedDate);
+      }
+      
+      // If parsing fails or date is invalid, return today's date
+      return todayLocalYYYYMMDD();
+    } catch (error) {
+      console.warn('Failed to parse AI date:', aiDate, error);
+      return todayLocalYYYYMMDD();
+    }
+  };
+
   const handleAICategorization = async (input: string) => {
     if (!input.trim() || !budget) return;
 
@@ -123,9 +147,10 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
           setIsAISuggestion(true);
         }
 
-        // If AI parsed a date, set the date field
+        // If AI parsed a date, safely convert it to local format
         if (result.date) {
-          setDate(result.date);
+          const localDate = parseAIDateToLocal(result.date);
+          setDate(localDate);
         }
 
         toast.success('AI Categorization', {
@@ -206,8 +231,6 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
     // Proceed with normal submission
     await saveTransactionWithCategory(categoryId, '', 0, false);
   };
-
-
 
   const handleConfirmSubmission = async () => {
     let newCategoryId = categoryId;
