@@ -13,9 +13,24 @@ type PatternsTabProps = {
 
 export function PatternsTab({ transactions, allocatedCategories }: PatternsTabProps) {
 
-  // Calculate weekly spending data with fixed day mapping
+  // Get current week's transactions only
+  const currentDate = new Date();
+  const startOfWeek = new Date(currentDate);
+  startOfWeek.setDate(currentDate.getDate() - currentDate.getDay()); // Start of week (Sunday)
+  startOfWeek.setHours(0, 0, 0, 0);
+  
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(startOfWeek.getDate() + 6); // End of week (Saturday)
+  endOfWeek.setHours(23, 59, 59, 999);
+  
+  const currentWeekTransactions = transactions.filter(t => {
+    const transactionDate = new Date(t.date);
+    return transactionDate >= startOfWeek && transactionDate <= endOfWeek;
+  });
+
+  // Calculate weekly spending data with fixed day mapping (only current week)
   const weeklyData = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((dayName, dayIndex) => {
-    const dayTransactions = transactions.filter(t => new Date(t.date).getDay() === dayIndex);
+    const dayTransactions = currentWeekTransactions.filter(t => new Date(t.date).getDay() === dayIndex);
     const dayTotal = dayTransactions.reduce((sum, t) => sum + t.amount, 0);
     const transactionCount = dayTransactions.length;
     
@@ -106,7 +121,7 @@ export function PatternsTab({ transactions, allocatedCategories }: PatternsTabPr
             Weekly Spending Pattern
           </CardTitle>
           <CardDescription className="text-sm">
-            Total spent: {formatCurrency(totalWeeklySpent)} across {transactions.length} {transactions.length === 1 ? 'transaction' : 'transactions'}
+            Total spent: {formatCurrency(totalWeeklySpent)} across {currentWeekTransactions.length} {currentWeekTransactions.length === 1 ? 'transaction' : 'transactions'}
           </CardDescription>
         </CardHeader>
         <CardContent>
