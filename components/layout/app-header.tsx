@@ -60,7 +60,7 @@ export function AppHeader() {
         <div className="container mx-auto px-4">
           <div className="flex h-16 items-center justify-between">
             {/* Left Section: Mobile Menu Button and Logo */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-1 sm:space-x-4">
               <Button
                 variant="ghost"
                 size="sm"
@@ -158,7 +158,7 @@ export function AppHeader() {
       {/* Mobile Sidebar Overlay */}
       {isMobileMenuOpen && (
         <div 
-          className="fixed inset-0 z-40 bg-black bg-opacity-50 md:hidden"
+          className="fixed inset-0 z-40 bg-background/50 backdrop-blur-sm border-b border-border md:hidden"
           onClick={closeMobileMenu}
         />
       )}

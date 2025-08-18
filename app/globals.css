@@ -173,6 +173,25 @@
 body {
   letter-spacing: var(--tracking-normal);
 }
+
+/* Hide scrollbar globally for the entire app */
+html {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+html::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+body {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
 @layer base {
   * {
     @apply border-border outline-ring/50;

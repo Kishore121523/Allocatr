@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,21 +29,29 @@ export function AddCategoriesCard({
   const chevronRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const categoryButtonsRef = useRef<HTMLDivElement>(null);
+  
+  // Track animation states to prevent unnecessary re-animations
+  const [hasAnimatedChevron, setHasAnimatedChevron] = useState(false);
+  const [hasAnimatedContent, setHasAnimatedContent] = useState(false);
+  const [hasAnimatedButtons, setHasAnimatedButtons] = useState(false);
+  const [previousShowAllCategories, setPreviousShowAllCategories] = useState(showAllCategories);
 
-  // Chevron animation
+  // Chevron animation - only run when showAllCategories actually changes
   useEffect(() => {
-    if (chevronRef.current) {
+    if (chevronRef.current && previousShowAllCategories !== showAllCategories) {
       gsap.to(chevronRef.current, {
         rotation: showAllCategories ? 180 : 0,
         duration: 0.3,
         ease: "power2.out"
       });
+      setHasAnimatedChevron(true);
     }
-  }, [showAllCategories]);
+    setPreviousShowAllCategories(showAllCategories);
+  }, [showAllCategories, previousShowAllCategories]);
 
-  // Content expand/collapse animation
+  // Content expand/collapse animation - only run when showAllCategories changes
   useEffect(() => {
-    if (contentRef.current) {
+    if (contentRef.current && previousShowAllCategories !== showAllCategories) {
       if (showAllCategories) {
         gsap.fromTo(contentRef.current, 
           { 
@@ -59,27 +67,40 @@ export function AddCategoriesCard({
             ease: "power2.out"
           }
         );
+        setHasAnimatedContent(true);
       }
+    }
+  }, [showAllCategories, previousShowAllCategories]);
+
+  // Category buttons stagger animation - only run once when categories are first shown
+  useEffect(() => {
+    if (showAllCategories && categoryButtonsRef.current && !hasAnimatedButtons) {
+      const buttons = categoryButtonsRef.current.querySelectorAll('button');
+      if (buttons.length > 0) {
+        gsap.fromTo(buttons, 
+          { 
+            opacity: 0, 
+          },
+          { 
+            opacity: 1, 
+            duration: 0.3,
+            stagger: 0.02,
+            ease: "power2.out"
+          }
+        );
+        setHasAnimatedButtons(true);
+      }
+    }
+  }, [showAllCategories, hasAnimatedButtons]);
+
+  // Reset animation flags when component is hidden
+  useEffect(() => {
+    if (!showAllCategories) {
+      setHasAnimatedButtons(false);
+      setHasAnimatedContent(false);
     }
   }, [showAllCategories]);
 
-  // Category buttons stagger animation
-  useEffect(() => {
-    if (showAllCategories && categoryButtonsRef.current) {
-      const buttons = categoryButtonsRef.current.querySelectorAll('button');
-      gsap.fromTo(buttons, 
-        { 
-          opacity: 0, 
-        },
-        { 
-          opacity: 1, 
-          duration: 0.3,
-          stagger: 0.02,
-          ease: "power2.out"
-        }
-      );
-    }
-  }, [filteredAvailableCategories, showAllCategories]);
   return (
     <Card className="mb-4 sm:mb-6">
       <CardHeader>
