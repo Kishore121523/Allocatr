@@ -78,6 +78,17 @@ export interface User {
     confidence: number;
     date?: string; // Add optional date field
   }
+
+  export interface SummaryReportInsight {
+    title: string;
+    text: string;
+  }
+
+  export interface SummaryReportData {
+    summary: string;
+    insights: SummaryReportInsight[];
+    stats: any;
+  }
   
   // Default budget categories
   export const DEFAULT_CATEGORIES: Omit<BudgetCategory, 'id' | 'allocatedAmount'>[] = [

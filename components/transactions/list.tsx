@@ -122,7 +122,7 @@ export function TransactionsList({
             {groupedTransactions.map((group) => (
               <div key={group.dateKey} className="space-y-3">
                 {/* Date header with daily total */}
-                <div className="flex items-center justify-between py-2 sm:mx-1 px-2 sm:px-3 border-b border-border/20 bg-muted/30 rounded-lg">
+                <div className="flex items-center justify-between py-2 sm:mx-1 px-3 sm:px-4 border-b border-border/20 bg-muted/30 rounded-lg">
                   <p className="font-semibold text-base text-foreground">{group.dateDisplay}</p>
                   <div className="text-sm text-muted-foreground">
                     <span className="font-semibold text-foreground">{formatCurrency(group.total)}</span>

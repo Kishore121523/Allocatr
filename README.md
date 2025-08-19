@@ -29,6 +29,14 @@
 - **Monthly Comparisons**: Side-by-side visual analysis of spending across different time periods
 - **Responsive Graphs**: Charts that adapt perfectly to desktop, tablet, and mobile screens
 
+### 📋 AI-Powered Summary Reports
+- **Comprehensive Analysis**: AI-generated monthly financial summaries with personalized insights
+- **Natural Language Reports**: Easy-to-read reports written in conversational, encouraging language
+- **Smart Recommendations**: Personalized financial advice based on spending patterns and budget performance
+- **Achievement Recognition**: Celebrates good financial habits and provides constructive feedback
+- **Actionable Insights**: Clear next steps and recommendations for improving financial health
+- **Real-time Generation**: Reports generated with up-to-date data from your current month
+
 ### 🛡️ Privacy-First Design
 - **Local Processing**: AI categorization respects your privacy
 - **Secure Authentication**: Firebase-based user authentication
@@ -93,6 +101,13 @@ The AI-powered expense entry system allows users to input expenses naturally:
 - **Trend Analysis**: Month-over-month comparisons with Chart.js powered visualizations
 - **Responsive Design**: Charts automatically resize and reflow for optimal viewing on any device
 
+### Summary Reports
+- **AI-Generated Insights**: Comprehensive monthly reports analyzing spending patterns, savings rates, and budget performance
+- **Personalized Recommendations**: Tailored financial advice based on individual spending habits
+- **Encouraging Tone**: Positive, motivational language that celebrates achievements and provides constructive feedback
+- **Structured Format**: Well-organized sections including Executive Summary, Category Analysis, and Next Steps
+- **Real-time Data**: Reports generated with current month's data for accurate, up-to-date insights
+
 ## 🔧 Configuration
 
 ### Customizing Categories
@@ -126,6 +141,30 @@ Response:
   "description": "coffee",
   "suggestedCategory": "Food & Dining",
   "date": "2024-01-15"
+}
+```
+
+### Summary Report Generation
+```typescript
+POST /api/summary-report
+Content-Type: application/json
+
+{
+  "budget": Budget,
+  "transactions": Transaction[],
+  "currentMonth": "2024-01"
+}
+
+Response:
+{
+  "report": "AI-generated natural language report...",
+  "stats": {
+    "income": 5000,
+    "totalSpent": 3200,
+    "remainingBudget": 1800,
+    "savingsRate": "36%",
+    // ... additional statistics
+  }
 }
 ```
 

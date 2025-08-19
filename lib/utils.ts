@@ -111,3 +111,11 @@ export function parseCurrencyInput(input: string): number {
   const amount = parseFloat(cleaned);
   return isNaN(amount) ? 0 : amount;
 }
+
+export function isLastDayOfMonth(date: Date = new Date()): boolean {
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const lastDay = new Date(year, month + 1, 0).getDate();
+  return (date.getDate() === lastDay);
+  // return !(date.getDate() === lastDay);
+}

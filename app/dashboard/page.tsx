@@ -9,17 +9,22 @@ import { ProtectedRoute } from '@/components/layout/protected-route';
 import { AppHeader } from '@/components/layout/app-header';
 import { CategoryCards } from '@/components/dashboard/category-cards';
 import { RecentTransactions } from '@/components/dashboard/recent-transactions';
-
-
+import { 
+    Tooltip as ShadcnTooltip, 
+    TooltipContent, 
+    TooltipProvider, 
+    TooltipTrigger 
+  } from "@/components/ui/tooltip"
 import { useBudget } from '@/hooks/use-budget';
 import { useTransactions } from '@/hooks/use-transactions';
 import { useMonth } from '@/providers/month-provider';
 import { EmptyBudget } from '@/components/dashboard/empty-budget';
+import { SummaryReportModal } from '@/components/dashboard/summary-report-modal';
 import { calculateDashboardStats, calculateCategorySpending } from '@/lib/budget-calculations';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { formatCurrency } from '@/lib/utils';
+import { formatCurrency, isLastDayOfMonth } from '@/lib/utils';
 import { useAuth } from '@/providers/auth-provider';
 import { 
   ChevronDown, 
@@ -33,7 +38,8 @@ import {
   ArrowRight,
   DollarSign,
   PiggyBank,
-  Calendar
+  Calendar,
+  FileText
 } from 'lucide-react';
 import {
   Chart as ChartJS,
@@ -71,6 +77,9 @@ export default function DashboardPage() {
   const [isBreakdownOpen, setIsBreakdownOpen] = useState(false);
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
   const [isTransactionsOpen, setIsTransactionsOpen] = useState(false);
+  
+  // Summary report modal state
+  const [isSummaryReportOpen, setIsSummaryReportOpen] = useState(false);
 
   // Refs for GSAP animations
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -300,10 +309,11 @@ export default function DashboardPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-background">
-        <AppHeader />
-        
-        <main className="container mx-auto px-6 sm:px-4 py-6 sm:py-8 max-w-7xl">
+      <TooltipProvider>
+        <div className="min-h-screen bg-background">
+          <AppHeader />
+          
+          <main className="container mx-auto px-6 sm:px-4 py-6 sm:py-8 max-w-7xl">
           {isLoading ? (
             <div className="space-y-8">
             
@@ -342,7 +352,34 @@ export default function DashboardPage() {
                         </div>
                       ))}
                       
-
+                      <TooltipProvider delayDuration={200}>
+                            <ShadcnTooltip>
+                                <TooltipTrigger asChild>
+                                <span className="hidden sm:inline-block">
+                                    <Button
+                                    onClick={() => setIsSummaryReportOpen(true)}
+                                    variant="outline"
+                                    size="sm"
+                                    disabled={!isLastDayOfMonth()}
+                                    className={`flex items-center justify-center gap-1 ${
+                                        isLastDayOfMonth() 
+                                        ? 'bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-950/20 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-900/30' 
+                                        : 'bg-gray-50 border-gray-200 text-gray-400 cursor-not-allowed dark:bg-gray-950/20 dark:border-gray-800 dark:text-gray-600'
+                                    }`}
+                                    >
+                                    <FileText className="h-4 w-4" />
+                                    Summary Report
+                                    </Button>
+                                </span>
+                                </TooltipTrigger>
+                                <TooltipContent side="top" className="max-w-lg text-xs">
+                                {isLastDayOfMonth() 
+                                    ? 'Generate monthly summary report' 
+                                    : 'Summary report is only available on the last day of the month'
+                                }
+                                </TooltipContent>
+                            </ShadcnTooltip>
+                        </TooltipProvider>
                     </div>
                   </div>
                 </CardHeader>
@@ -477,7 +514,7 @@ export default function DashboardPage() {
                 {/* View Analytics Card */}
                 <Card 
                   ref={(el) => { cardRefs.current[2] = el; }}
-                  className="group relative overflow-hidden border-0 shadow-md card-hover bg-gradient-to-br from-blue-500/10 to-blue-600/5 hover:from-blue-500/15 hover:to-blue-600/10 sm:col-span-2 md:col-span-1"
+                  className="group relative overflow-hidden border-0 shadow-md card-hover bg-gradient-to-br from-blue-500/10 to-blue-600/5 hover:from-blue-500/15 hover:to-blue-600/10"
                   style={{ opacity: shouldAnimatePageTransitions() ? 0 : 1 }}
                 >
                   <CardContent className="p-4 sm:p-6">
@@ -493,6 +530,55 @@ export default function DashboardPage() {
                         <p className="text-xs sm:text-sm text-muted-foreground mt-1">Deep spending insights</p>
                       </div>
                       <ArrowRight className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 h-4 w-4 text-blue-600/50 group-hover:translate-x-1 transition-transform" />
+                    </button>
+                  </CardContent>
+                </Card>
+                
+                {/* Summary Report Card */}
+                <Card 
+                  ref={(el) => { cardRefs.current[3] = el; }}
+                  className={`group relative overflow-hidden border-0 shadow-md ${
+                    isLastDayOfMonth() 
+                      ? 'card-hover bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 hover:from-emerald-500/15 hover:to-emerald-600/10' 
+                      : 'bg-gradient-to-br from-gray-500/10 to-gray-600/5 cursor-not-allowed'
+                  }`}
+                  style={{ opacity: shouldAnimatePageTransitions() ? 0 : 1 }}
+                >
+                  <CardContent className="p-4 sm:p-6">
+                    <button 
+                      onClick={() => isLastDayOfMonth() && setIsSummaryReportOpen(true)}
+                      disabled={!isLastDayOfMonth()}
+                      className={`w-full h-full flex flex-col items-center justify-center space-y-3 group min-h-[120px] sm:min-h-[140px] ${
+                        !isLastDayOfMonth() ? 'cursor-not-allowed' : ''
+                      }`}
+                      title={isLastDayOfMonth() ? 'Generate monthly summary report' : 'Summary report available only on the last day of the month'}
+                    >
+                      <div className={`p-3 sm:p-4 rounded-full transition-colors ${
+                        isLastDayOfMonth() 
+                          ? 'bg-emerald-500/20 group-hover:bg-emerald-500/30' 
+                          : 'bg-gray-500/20'
+                      }`}>
+                        <FileText className={`h-6 w-6 sm:h-8 sm:w-8 ${
+                          isLastDayOfMonth() 
+                            ? 'text-emerald-600 dark:text-emerald-400' 
+                            : 'text-gray-400 dark:text-gray-600'
+                        }`} />
+                      </div>
+                      <div className="text-center">
+                        <h3 className={`font-semibold text-sm sm:text-base ${
+                          isLastDayOfMonth() 
+                            ? 'text-foreground' 
+                            : 'text-muted-foreground'
+                        }`}>Summary Report</h3>
+                        <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                          {isLastDayOfMonth() ? 'AI-powered insights' : 'Available on last day of month'}
+                        </p>
+                      </div>
+                      <ArrowRight className={`absolute bottom-4 right-4 sm:bottom-6 sm:right-6 h-4 w-4 transition-transform ${
+                        isLastDayOfMonth() 
+                          ? 'text-emerald-600/50 group-hover:translate-x-1' 
+                          : 'text-gray-400/50'
+                      }`} />
                     </button>
                   </CardContent>
                 </Card>
@@ -635,7 +721,19 @@ export default function DashboardPage() {
             </div>
           )}
         </main>
+        
+        {/* Summary Report Modal */}
+        {budget && (
+          <SummaryReportModal
+            open={isSummaryReportOpen}
+            onOpenChange={setIsSummaryReportOpen}
+            budget={budget}
+            transactions={transactions}
+            currentMonth={currentMonth}
+          />
+        )}
       </div>
+        </TooltipProvider>
     </ProtectedRoute>
   );
 }
