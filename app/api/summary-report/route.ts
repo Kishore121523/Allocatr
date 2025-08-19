@@ -34,9 +34,9 @@ export async function POST(request: NextRequest) {
     const categorySpending = calculateCategorySpending(budget, transactions);
     const topCategories = getTopCategories(categorySpending, 5);
     const overBudgetInsights = calculateOverBudgetInsights(budget, transactions);
-    const monthProgress = getMonthProgress();
-    const daysRemaining = getRemainingDaysInMonth();
-    const dailyBudgetRemaining = getDailyBudgetRemaining(stats.remainingBudget);
+    const monthProgress = getMonthProgress(currentMonth);
+    const daysRemaining = getRemainingDaysInMonth(currentMonth);
+    const dailyBudgetRemaining = getDailyBudgetRemaining(stats.remainingBudget, currentMonth);
 
     // Calculate additional insights
     const totalAllocated = budget.categories.reduce((sum: number, cat: any) => sum + cat.allocatedAmount, 0);
@@ -47,6 +47,24 @@ export async function POST(request: NextRequest) {
     const spendingRate = budget.monthlyIncome > 0
       ? ((stats.totalSpent / budget.monthlyIncome) * 100).toFixed(1)
       : '0';
+    
+    // Calculate daily spending average based on month progress
+    const [year, month] = currentMonth.split('-').map(Number);
+    const targetDate = new Date(year, month - 1, 1);
+    const today = new Date();
+    let daysInMonth = new Date(year, month, 0).getDate();
+    let daysPassed = daysInMonth; // Default for past months
+    
+    // If it's the current month, calculate actual days passed
+    if (targetDate.getFullYear() === today.getFullYear() && targetDate.getMonth() === today.getMonth()) {
+      daysPassed = today.getDate();
+    } else if (targetDate.getFullYear() > today.getFullYear() || 
+               (targetDate.getFullYear() === today.getFullYear() && targetDate.getMonth() > today.getMonth())) {
+      // Future month
+      daysPassed = 0;
+    }
+    
+    const dailySpendingAverage = daysPassed > 0 ? stats.totalSpent / daysPassed : 0;
 
     // Prepare data for AI analysis
     const analysisData = {
@@ -63,6 +81,7 @@ export async function POST(request: NextRequest) {
       totalAllocated,
       unallocatedFunds,
       dailyBudgetRemaining,
+      dailySpendingAverage,
       topCategories: topCategories.map(cat => ({
         name: cat.categoryName,
         spent: cat.spent,

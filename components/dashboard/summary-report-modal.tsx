@@ -350,63 +350,116 @@ export function SummaryReportModal({
                 {/* Main Report Sections */}
                 {renderSummaryReport(reportData)}
 
-                 {/* Daily Budget Tracker */}
-                 <Card className="border-0 bg-gradient-to-r from-slate-50 to-gray-50 dark:from-slate-950/30 dark:to-gray-950/30">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-base font-semibold flex items-center justify-between">
-                      <span className="flex items-center gap-2">
-                        <CalendarDays className="h-4 w-4 text-gray-600 dark:text-gray-400" />
-                        Daily Budget Tracker
-                      </span>
-                      <span className="text-sm font-normal text-gray-500">
-                        {reportData.stats.daysRemaining} days left
-                      </span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Recommended daily spend</span>
-                        <span className="text-lg font-bold text-gray-900 dark:text-gray-100">
-                          {formatCurrency(reportData.stats.dailyBudgetRemaining)}
+                 {/* Daily Budget Tracker - Only show for current and future months */}
+                 {reportData.stats.daysRemaining > 0 && (
+                   <Card className="border-0 bg-gradient-to-r from-slate-50 to-gray-50 dark:from-slate-950/30 dark:to-gray-950/30">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-base font-semibold flex items-center justify-between">
+                        <span className="flex items-center gap-2">
+                          <CalendarDays className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+                          Daily Budget Tracker
                         </span>
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-xs text-gray-500">
-                          <span>Start of month</span>
-                          <span>Today</span>
-                          <span>End of month</span>
+                        <span className="text-sm font-normal text-gray-500">
+                          {reportData.stats.daysRemaining} days left
+                        </span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-600 dark:text-gray-400">Recommended daily spend</span>
+                          <span className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                            {formatCurrency(reportData.stats.dailyBudgetRemaining)}
+                          </span>
                         </div>
-                        <Progress 
-                          value={parseInt(reportData.stats.monthProgress)} 
-                          className="h-3" 
-                        />
-                      </div>
-                      <div className="grid grid-cols-3 gap-4 pt-2">
-                        <div className="text-center">
-                          <div className="text-xs text-gray-500 dark:text-gray-400">Spent/day avg</div>
-                          <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                            {formatCurrency(reportData.stats.totalSpent / (30 - reportData.stats.daysRemaining))}
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-xs text-gray-500">
+                            <span>Start of month</span>
+                            <span>Today</span>
+                            <span>End of month</span>
+                          </div>
+                          <Progress 
+                            value={parseInt(reportData.stats.monthProgress)} 
+                            className="h-3" 
+                          />
+                        </div>
+                        <div className="grid grid-cols-3 gap-4 pt-2">
+                          <div className="text-center">
+                            <div className="text-xs text-gray-500 dark:text-gray-400">Spent/day avg</div>
+                            <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                              {formatCurrency(reportData.stats.dailySpendingAverage || 0)}
+                            </div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-xs text-gray-500 dark:text-gray-400">Target/day</div>
+                            <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                              {formatCurrency(reportData.stats.income / 30)}
+                            </div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-xs text-gray-500 dark:text-gray-400">Variance</div>
+                            <div className={`text-sm font-semibold ${
+                              reportData.stats.remainingBudget > 0 ? 'text-green-600' : 'text-red-600'
+                            }`}>
+                              {reportData.stats.remainingBudget > 0 ? '+' : ''}{formatCurrency(reportData.stats.remainingBudget / reportData.stats.daysRemaining - reportData.stats.income / 30)}
+                            </div>
                           </div>
                         </div>
-                        <div className="text-center">
-                          <div className="text-xs text-gray-500 dark:text-gray-400">Target/day</div>
-                          <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                            {formatCurrency(reportData.stats.income / 30)}
-                          </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                 )}
+
+                 {/* Month Completion Summary - Show for past months */}
+                 {reportData.stats.daysRemaining === 0 && (
+                   <Card className="border-0 bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-950/30 dark:to-green-950/30">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-base font-semibold flex items-center justify-between">
+                        <span className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                          Month Complete
+                        </span>
+                        <span className="text-sm font-normal text-emerald-600 dark:text-emerald-400">
+                          Final Results
+                        </span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-600 dark:text-gray-400">Average daily spending</span>
+                          <span className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                            {formatCurrency(reportData.stats.dailySpendingAverage || 0)}
+                          </span>
                         </div>
-                        <div className="text-center">
-                          <div className="text-xs text-gray-500 dark:text-gray-400">Variance</div>
-                          <div className={`text-sm font-semibold ${
-                            reportData.stats.remainingBudget > 0 ? 'text-green-600' : 'text-red-600'
-                          }`}>
-                            {reportData.stats.remainingBudget > 0 ? '+' : ''}{formatCurrency(reportData.stats.remainingBudget / reportData.stats.daysRemaining - reportData.stats.income / 30)}
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-xs text-gray-500">
+                            <span>Month Start</span>
+                            <span>Month End</span>
+                          </div>
+                          <Progress 
+                            value={100} 
+                            className="h-3" 
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4 pt-2">
+                          <div className="text-center">
+                            <div className="text-xs text-gray-500 dark:text-gray-400">Total Spent</div>
+                            <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                              {formatCurrency(reportData.stats.totalSpent)}
+                            </div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-xs text-gray-500 dark:text-gray-400">Monthly Income</div>
+                            <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                              {formatCurrency(reportData.stats.income)}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                 )}
 
                   {/* Key Metrics Summary */}
                   <Card className="bg-muted/30 gap-3 py-4">
@@ -429,11 +482,11 @@ export function SummaryReportModal({
                             </div>
                             <div>
                             <span className="text-muted-foreground">Days Remaining:</span>
-                            <div className="font-semibold">{reportData.stats.daysRemaining}</div>
+                            <div className="font-semibold">{reportData.stats.daysRemaining > 0 ? reportData.stats.daysRemaining : 'Complete'}</div>
                             </div>
                             <div>
                             <span className="text-muted-foreground">Daily Budget:</span>
-                            <div className="font-semibold">{formatCurrency(reportData.stats.dailyBudgetRemaining)}</div>
+                            <div className="font-semibold">{reportData.stats.daysRemaining > 0 ? formatCurrency(reportData.stats.dailyBudgetRemaining) : 'N/A'}</div>
                             </div>
                             <div>
                             <span className="text-muted-foreground">Over Budget Categories:</span>
@@ -444,7 +497,7 @@ export function SummaryReportModal({
                     </Card>
                     
                     {/* Footer with additional actions */}
-                    <div className="mt-2 mb-4">
+                    <div className="mt-2 mb-5">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
                           <Badge variant="outline" className="gap-1.5">
@@ -456,10 +509,6 @@ export function SummaryReportModal({
                             Secure Analysis
                           </Badge>
                         </div>
-                        <Button variant="outline" size="sm" className="gap-2">
-                          <FileText className="h-4 w-4" />
-                          Export Report
-                        </Button>
                       </div>
                     </div>
               </>

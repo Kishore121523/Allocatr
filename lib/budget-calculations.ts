@@ -177,16 +177,41 @@ export function getTopCategories(
     .slice(0, limit);
 }
 
-export function getRemainingDaysInMonth(): number {
+export function getRemainingDaysInMonth(monthString?: string): number {
+  let targetDate: Date;
+  
+  if (monthString) {
+    // Parse the month string (format: "YYYY-MM")
+    const [year, month] = monthString.split('-').map(Number);
+    targetDate = new Date(year, month - 1, 1); // month - 1 because JS months are 0-indexed
+  } else {
+    targetDate = new Date();
+  }
+  
+  const lastDay = new Date(targetDate.getFullYear(), targetDate.getMonth() + 1, 0);
   const today = new Date();
-  const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  
+  // If we're looking at a past month, return 0 days remaining
+  if (targetDate.getFullYear() < today.getFullYear() || 
+      (targetDate.getFullYear() === today.getFullYear() && targetDate.getMonth() < today.getMonth())) {
+    return 0;
+  }
+  
+  // If we're looking at a future month, return all days in that month
+  if (targetDate.getFullYear() > today.getFullYear() || 
+      (targetDate.getFullYear() === today.getFullYear() && targetDate.getMonth() > today.getMonth())) {
+    return lastDay.getDate();
+  }
+  
+  // If we're looking at the current month, calculate remaining days
   return lastDay.getDate() - today.getDate() + 1;
 }
 
 export function getDailyBudgetRemaining(
-  remainingBudget: number
+  remainingBudget: number,
+  monthString?: string
 ): number {
-  const daysLeft = getRemainingDaysInMonth();
+  const daysLeft = getRemainingDaysInMonth(monthString);
   return daysLeft > 0 ? remainingBudget / daysLeft : 0;
 }
 
@@ -200,11 +225,35 @@ export function getDailyAllocatedBudgetRemaining(
   return daysLeft > 0 ? totalAllocatedRemaining / daysLeft : 0;
 }
 
-export function getMonthProgress(): number {
-  const today = new Date();
-  const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-  const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+export function getMonthProgress(monthString?: string): number {
+  let targetDate: Date;
+  
+  if (monthString) {
+    // Parse the month string (format: "YYYY-MM")
+    const [year, month] = monthString.split('-').map(Number);
+    targetDate = new Date(year, month - 1, 1); // month - 1 because JS months are 0-indexed
+  } else {
+    targetDate = new Date();
+  }
+  
+  const firstDay = new Date(targetDate.getFullYear(), targetDate.getMonth(), 1);
+  const lastDay = new Date(targetDate.getFullYear(), targetDate.getMonth() + 1, 0);
   const totalDays = lastDay.getDate();
+  const today = new Date();
+  
+  // If we're looking at a past month, return 100% (month is complete)
+  if (targetDate.getFullYear() < today.getFullYear() || 
+      (targetDate.getFullYear() === today.getFullYear() && targetDate.getMonth() < today.getMonth())) {
+    return 100;
+  }
+  
+  // If we're looking at a future month, return 0% (month hasn't started)
+  if (targetDate.getFullYear() > today.getFullYear() || 
+      (targetDate.getFullYear() === today.getFullYear() && targetDate.getMonth() > today.getMonth())) {
+    return 0;
+  }
+  
+  // If we're looking at the current month, calculate progress
   const daysPassed = today.getDate();
   return Math.round((daysPassed / totalDays) * 100);
 }

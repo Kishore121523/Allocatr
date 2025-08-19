@@ -534,56 +534,6 @@ export default function DashboardPage() {
                   </CardContent>
                 </Card>
                 
-                {/* Summary Report Card */}
-                <Card 
-                  ref={(el) => { cardRefs.current[3] = el; }}
-                  className={`group relative overflow-hidden border-0 shadow-md ${
-                    isLastDayOfMonth() 
-                      ? 'card-hover bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 hover:from-emerald-500/15 hover:to-emerald-600/10' 
-                      : 'bg-gradient-to-br from-gray-500/10 to-gray-600/5 cursor-not-allowed'
-                  }`}
-                  style={{ opacity: shouldAnimatePageTransitions() ? 0 : 1 }}
-                >
-                  <CardContent className="p-4 sm:p-6">
-                    <button 
-                      onClick={() => isLastDayOfMonth() && setIsSummaryReportOpen(true)}
-                      disabled={!isLastDayOfMonth()}
-                      className={`w-full h-full flex flex-col items-center justify-center space-y-3 group min-h-[120px] sm:min-h-[140px] ${
-                        !isLastDayOfMonth() ? 'cursor-not-allowed' : ''
-                      }`}
-                      title={isLastDayOfMonth() ? 'Generate monthly summary report' : 'Summary report available only on the last day of the month'}
-                    >
-                      <div className={`p-3 sm:p-4 rounded-full transition-colors ${
-                        isLastDayOfMonth() 
-                          ? 'bg-emerald-500/20 group-hover:bg-emerald-500/30' 
-                          : 'bg-gray-500/20'
-                      }`}>
-                        <FileText className={`h-6 w-6 sm:h-8 sm:w-8 ${
-                          isLastDayOfMonth() 
-                            ? 'text-emerald-600 dark:text-emerald-400' 
-                            : 'text-gray-400 dark:text-gray-600'
-                        }`} />
-                      </div>
-                      <div className="text-center">
-                        <h3 className={`font-semibold text-sm sm:text-base ${
-                          isLastDayOfMonth() 
-                            ? 'text-foreground' 
-                            : 'text-muted-foreground'
-                        }`}>Summary Report</h3>
-                        <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-                          {isLastDayOfMonth() ? 'AI-powered insights' : 'Available on last day of month'}
-                        </p>
-                      </div>
-                      <ArrowRight className={`absolute bottom-4 right-4 sm:bottom-6 sm:right-6 h-4 w-4 transition-transform ${
-                        isLastDayOfMonth() 
-                          ? 'text-emerald-600/50 group-hover:translate-x-1' 
-                          : 'text-gray-400/50'
-                      }`} />
-                    </button>
-                  </CardContent>
-                </Card>
-                
-                
               </div>
 
               {/* Collapsible Budget Breakdown */}

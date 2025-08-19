@@ -84,10 +84,42 @@ export interface User {
     text: string;
   }
 
+  export interface SummaryReportStats {
+    month: string;
+    monthProgress: string;
+    daysRemaining: number;
+    income: number;
+    totalSpent: number;
+    remainingBudget: number;
+    savingsRate: string;
+    spendingRate: string;
+    transactionCount: number;
+    categoriesOverBudget: number;
+    totalAllocated: number;
+    unallocatedFunds: number;
+    dailyBudgetRemaining: number;
+    dailySpendingAverage: number;
+    topCategories: Array<{
+      name: string;
+      spent: number;
+      allocated: number;
+      percentageUsed: number;
+    }>;
+    overBudgetCategories: Array<{
+      name: string;
+      overage: number;
+      allocated: number;
+      spent: number;
+    }>;
+    totalOverage: number;
+    canCoverWithUnallocated: boolean;
+    coveragePercentage: number;
+  }
+
   export interface SummaryReportData {
     summary: string;
     insights: SummaryReportInsight[];
-    stats: any;
+    stats: SummaryReportStats;
   }
   
   // Default budget categories
