@@ -149,7 +149,8 @@ export default function LandingPage() {
           src={bgImage} 
           alt="Background" 
           fill 
-          className="object-cover p-[3rem] rounded-[10%] rounded-bl-[25%] hover:scale-101 transition-all duration-500 " 
+          draggable={false}
+          className="object-cover p-[3rem] rounded-[10%] rounded-bl-[25%] hover:scale-101 transition-all duration-500 cursor-" 
           style={{filter: 'drop-shadow(0px 10px 10px rgba(0,0, 0, 0.25))'}}
         />
       </div>
