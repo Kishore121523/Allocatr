@@ -6,6 +6,38 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)
 ![Firebase](https://img.shields.io/badge/Firebase-orange?style=flat-square&logo=firebase)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat-square&logo=tailwind-css)
+![Azure OpenAI](https://img.shields.io/badge/Azure_OpenAI-0078D4?style=flat-square&logo=microsoft)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel)
+
+## 🚀 Quick Start
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/allocatr.git
+   cd allocatr
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env.local
+   # Add your Firebase and Azure OpenAI credentials
+   ```
+
+4. **Run the development server**
+   ```bash
+   npm run dev
+   ```
+
+5. **Open [http://localhost:3000](http://localhost:3000)** in your browser
+
+## 🎯 Live Demo
+
+**Link** A live demo will be available at [allocatr.vercel.app](https://allocatr-neon.vercel.app/)
 
 ## ✨ Features
 
@@ -19,7 +51,7 @@
 - **Flexible Allocation**: Allocate your income across custom categories
 - **Unallocated Funds**: Track money not yet assigned to specific categories
 - **Budget Validation**: Smart warnings when adding expenses to unallocated categories
-- **Real-time Tracking**: See remaining budget and spending percentages instantly
+- **Real-time tracking**: Reports generated with current month's data for accurate, up-to-date insights
 
 ### 📊 Comprehensive Analytics & Visualizations
 - **Interactive Charts**: Beautiful doughnut charts showing category spending distributions
@@ -38,7 +70,6 @@
 - **Real-time Generation**: Reports generated with up-to-date data from your current month
 
 ### 🛡️ Privacy-First Design
-- **Local Processing**: AI categorization respects your privacy
 - **Secure Authentication**: Firebase-based user authentication
 - **Data Ownership**: Your financial data stays under your control
 - **No Tracking**: No third-party analytics or data collection
@@ -48,8 +79,6 @@
 - **Dark/Light Themes**: Automatic theme switching based on preferences
 - **Smooth Animations**: GSAP-powered animations for delightful interactions
 - **Global Quick Add**: Floating action button accessible from any page
-- **Keyboard Navigation**: Full accessibility support
-
 
 ## 🏗️ Tech Stack
 
@@ -101,12 +130,6 @@ The AI-powered expense entry system allows users to input expenses naturally:
 - **Trend Analysis**: Month-over-month comparisons with Chart.js powered visualizations
 - **Responsive Design**: Charts automatically resize and reflow for optimal viewing on any device
 
-### Summary Reports
-- **AI-Generated Insights**: Comprehensive monthly reports analyzing spending patterns, savings rates, and budget performance
-- **Personalized Recommendations**: Tailored financial advice based on individual spending habits
-- **Encouraging Tone**: Positive, motivational language that celebrates achievements and provides constructive feedback
-- **Structured Format**: Well-organized sections including Executive Summary, Category Analysis, and Next Steps
-- **Real-time Data**: Reports generated with current month's data for accurate, up-to-date insights
 
 ## 🔧 Configuration
 
@@ -114,59 +137,8 @@ The AI-powered expense entry system allows users to input expenses naturally:
 Default categories include Housing, Food & Dining, Transportation, Healthcare, Entertainment, and Savings. Users can:
 - Add from popular category suggestions
 - Create completely custom categories
-- Set custom colors for visual organization
 - Allocate specific budget amounts
 
-### AI Configuration
-The AI categorization system can be configured in `/app/api/categorize/route.ts`:
-- Adjust confidence thresholds
-- Modify category matching logic
-- Customize prompt engineering for better results
-
-## 📄 API Reference
-
-### Expense Categorization
-```typescript
-POST /api/categorize
-Content-Type: application/json
-
-{
-  "input": "spent $25 on coffee this morning",
-  "categories": ["Food & Dining", "Transportation", "Entertainment"]
-}
-
-Response:
-{
-  "amount": 25.00,
-  "description": "coffee",
-  "suggestedCategory": "Food & Dining",
-  "date": "2024-01-15"
-}
-```
-
-### Summary Report Generation
-```typescript
-POST /api/summary-report
-Content-Type: application/json
-
-{
-  "budget": Budget,
-  "transactions": Transaction[],
-  "currentMonth": "2024-01"
-}
-
-Response:
-{
-  "report": "AI-generated natural language report...",
-  "stats": {
-    "income": 5000,
-    "totalSpent": 3200,
-    "remainingBudget": 1800,
-    "savingsRate": "36%",
-    // ... additional statistics
-  }
-}
-```
 
 ## 👨‍💻 About This Project
 
@@ -209,6 +181,37 @@ allocatr/
 - **Firebase Rules**: Database security rules implemented
 - **Authentication**: Secure user authentication flow
 - **Data Validation**: Input validation and sanitization
+- **CORS Protection**: Cross-origin request protection
+- **Rate Limiting**: API endpoint protection against abuse
+
+## 🛣️ Roadmap
+
+### Phase 1: Core Features ✅
+- [x] Zero-based budgeting system
+- [x] AI-powered expense categorization
+- [x] Basic analytics and visualizations
+- [x] User authentication
+
+### Phase 2: Enhanced Analytics 🚧
+- [x] Advanced chart visualizations
+- [x] AI summary reports
+- [ ] Voice input support
+- [ ] Export functionality (CSV/PDF)
+- [ ] Budget templates and sharing
+
+### Phase 3: Advanced Features 📋
+- [ ] Multi-currency support
+- [ ] Recurring transaction detection
+- [ ] Bill reminders and notifications
+
+### Phase 4: Social & Collaboration 🤝
+- [ ] Family/household budget sharing
+- [ ] Anonymous spending insights
+
+## 🤝 Contributing
+
+While this is primarily a personal project, I welcome feedback and suggestions!
+
 
 ## 📄 License & Usage
 
