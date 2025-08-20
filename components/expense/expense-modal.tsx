@@ -430,7 +430,7 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
               <div className="flex gap-2 items-center">
                 <div className="relative flex-1">
                   <Textarea
-                    placeholder="Type or Speak: 'I bought coffee at Starbucks for $2.50'"
+                    placeholder='Grabbed a Coffee at Starbucks for $2.50...'
                     value={naturalInput}
                     onChange={(e) => setNaturalInput(e.target.value)}
                     className="resize-none text-sm"
