@@ -5,7 +5,7 @@
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Calculator, ArrowRight } from 'lucide-react';
+import { Calculator, ArrowRight, PiggyBank } from 'lucide-react';
 
 export function EmptyBudget() {
   const router = useRouter();
@@ -16,10 +16,10 @@ export function EmptyBudget() {
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <div className="p-3 bg-accent rounded-full">
-              <Calculator className="h-8 w-8 text-primary" />
+              <PiggyBank className="h-8 w-8 text-primary" />
             </div>
           </div>
-          <CardTitle className="text-2xl">Welcome to Allocatr!</CardTitle>
+          <CardTitle className="text-2xl">Welcome to Allocatr</CardTitle>
           <CardDescription className="text-base mt-2">
             Let's set up your first budget using zero-based budgeting principles.
             Every dollar will be assigned a purpose.
