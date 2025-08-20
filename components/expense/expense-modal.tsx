@@ -437,7 +437,7 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
                     rows={2}
                   />
                 </div>
-                {isSpeechSupported && (
+                {/* {isSpeechSupported && (
                   <Button
                     type="button"
                     variant={isListening ? 'destructive' : 'outline'}
@@ -451,7 +451,7 @@ export function ExpenseModal({ isOpen, onClose, transaction }: ExpenseModalProps
                       <Mic className="h-4 w-4" />
                     )}
                   </Button>
-                )}
+                )} */}
               </div>
               <Button
                 type="button"
